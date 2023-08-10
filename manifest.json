@@ -1,0 +1,42 @@
+{
+	"format_version": 2,
+	"header": {
+		"description": "Besser als Gut",
+		"name": "§l§bHighlander§r",
+        "uuid": "541a0349-44b8-4e71-979f-35ed83dbe3ef",
+		"version": [
+			1,
+			0,
+			0
+		],
+		"min_engine_version": [
+			1,
+			20,
+			0
+		]
+	},
+	"modules": [
+		{
+			"description": "Highlander Scripting dependencies",
+			"type": "script",
+			"language": "javascript",
+			"uuid": "a5d6fce9-f121-4f34-856f-d3434969b98b",
+			"version": [
+				1,
+				0,
+				0
+			],
+			"entry": "scripts/index.js"
+		}
+	],
+	"dependencies": [
+		{
+            "module_name": "@minecraft/server",
+            "version": "1.4.0-beta"
+        },
+		{
+			"module_name": "@minecraft/server-ui",
+			"version": "1.2.0-beta"
+		}
+	]
+}

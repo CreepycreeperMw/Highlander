@@ -1,0 +1,19 @@
+{
+	"format_version": "1.16.0",
+	"minecraft:entity": {
+		"description": {
+			"identifier": "c:to_inv",
+			"runtime_identifier": "minecraft:arrow",
+			"is_spawnable": false,
+			"is_summonable": true,
+			"is_experimental": false
+		},
+		"components": {
+			"minecraft:projectile": {},
+			"minecraft:transformation": {
+				"into": "c:inv_view",
+				"keep_owner": true
+			}
+		}
+	}
+}

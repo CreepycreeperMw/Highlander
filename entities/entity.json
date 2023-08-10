@@ -1,0 +1,56 @@
+{
+    "format_version": "1.16.0",
+    "minecraft:entity": {
+        "description": {
+            "identifier": "minecraft:armor_stand",
+            "is_spawnable": false,
+            "is_summonable": true,
+            "is_experimental": false
+        },
+        "component_groups":{
+            "c:despawn":{
+                "minecraft:instant_despawn": {}
+            }
+        },
+        "components": {
+            "minecraft:knockback_resistance": {
+                "value": 100,
+                "max": 100
+            },
+            "minecraft:nameable": {
+                "alwaysShow": false,
+                "allow_name_tag_renaming": false
+            },
+            "minecraft:collision_box": {
+                "width": 0.1,
+                "height": 0.1
+            },
+            "minecraft:movement": {
+                "value": 0
+            },
+            "minecraft:movement.basic": {},
+            "minecraft:damage_sensor": {
+                "triggers":{
+                    "deals_damage": false
+                }
+            },
+            "minecraft:pushable": {
+                "is_pushable": false,
+                "is_pushable_by_piston": false
+            },
+            "minecraft:physics": {
+                "has_gravity": false,
+                "has_collision": false
+            }
+        },
+        "events":{
+            "c:despawn":{
+                "add":{
+                    "component_groups":[
+                        "c:despawn"
+                    ]
+                }
+            }
+        }
+    }
+}

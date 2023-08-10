@@ -1,0 +1,87 @@
+{
+    "format_version": "1.16.100",
+    "minecraft:entity": {
+        "description": {
+            "identifier": "minecraft:player",
+            "is_spawnable": false,
+            "is_summonable": false,
+            "is_experimental": false
+        },
+        "component_groups":{
+            "c:spawn_inv":{
+                "minecraft:spawn_entity":{
+                    "entities":{
+                        "min_wait_time":0,
+                        "max_wait_time":0,
+                        "spawn_entity":"c:to_inv",
+                        "single_use":true,
+                        "num_to_spawn":1
+                    }
+                }
+            }
+		},
+        "components": {
+            "minecraft:experience_reward": {
+                "on_death": "Math.Min(query.player_level * 7, 100)"
+            },
+            "minecraft:type_family": {
+                "family": [
+                    "player"
+                ]
+            },
+            "minecraft:is_hidden_when_invisible": {},
+            "minecraft:loot": {
+                "table": "loot_tables/empty.json"
+            },
+            "minecraft:collision_box": {
+                "width": 0.6,
+                "height": 1.8
+            },
+            "minecraft:can_climb": {},
+            "minecraft:movement": {
+                "value": 0.1
+            },
+            "minecraft:player.saturation": {
+                "value": 20
+            },
+            "minecraft:player.exhaustion": {
+                "value": 0,
+                "max": 4
+            },
+            "minecraft:player.level": {
+                "value": 0,
+                "max": 24791
+            },
+            "minecraft:player.experience": {
+                "value": 0,
+                "max": 1
+            },
+            "minecraft:breathable": {
+                "total_supply": 15,
+                "suffocate_time": -1,
+                "inhale_time": 3.75,
+                "generates_bubbles": false
+            },
+            "minecraft:nameable": {
+                "always_show": true,
+                "allow_name_tag_renaming": false
+            },
+            "minecraft:physics": {},
+            "minecraft:pushable": {
+                "is_pushable": false,
+                "is_pushable_by_piston": true
+            },
+            "minecraft:conditional_bandwidth_optimization": {},
+            "minecraft:scaffolding_climber": {}
+        },
+        "events": {
+            "c:spawn_inv":{
+                "add":{
+                    "component_groups":[
+                        "c:spawn_inv"
+                    ]
+                }
+            }
+        }
+    }
+}
