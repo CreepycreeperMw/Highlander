@@ -73,7 +73,7 @@ export function noticeChanges(invConId) {
     let currentInv = congen.getComponent("minecraft:inventory").container
 
     /**
-     * @type {Map<ItemStack, {amount:number, affectedSlots: number[]}>}
+     * @type {Map<ItemStack, Object<number,number>>}
      */
     let missingItems = new Map()
     for (let i = 0; i < currentInv.size; i++) {
@@ -89,13 +89,12 @@ export function noticeChanges(invConId) {
             let noMatch = true
             for(const [key, value] of missingItems) {
                 if(key.isStackableWith(oriItem)) {
-                    if(value.amount + amount == 0) missingItems.delete(key)
-                    else missingItems.set(key, {amount: value.amount+amount, affectedSlots:[...value.affectedSlots, i]})
+                    missingItems.set(key, {[i]: amount, ...value})
                     noMatch = false
                     break;
                 }
             }
-            if(noMatch) missingItems.set(oriItem, {amount,affectedSlots:[i]})
+            if(noMatch) missingItems.set(oriItem, {[i]: amount})
         }
         if(item && (!oriItem || item.amount > oriItem.amount)) {
             // Item was added
@@ -106,13 +105,12 @@ export function noticeChanges(invConId) {
             let noMatch = true
             for(const [key, value] of missingItems) {
                 if(key.isStackableWith(item)) {
-                    if(value.amount - amount == 0) missingItems.delete(key)
-                    else missingItems.set(key, value.amount-amount)
+                    missingItems.set(key, {[i]: -amount,...value})
                     noMatch = false
                     break;
                 }
             }
-            if(noMatch) missingItems.set(item, -amount)
+            if(noMatch) missingItems.set(item, {[i]: -amount})
         }
     }
     // 1. Find item stack of missing conv item in players inv
