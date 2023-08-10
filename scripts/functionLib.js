@@ -28,7 +28,7 @@ export function updateInv(player, viewingen, viewer, firstPage=true, reload=true
 
         if(inv.getItem(i)) {
             var item = inv.getItem(i);
-            saveCon[i] = item
+            saveCon[i] = item.clone()
 
             var lore = item.getLore()
             if(i<9) {lore.push("§r§8[Hotbar Slot "+(i+1)+"]")} else {lore.push("§r§8[Inventory Slot "+(i-8)+"]")}
@@ -66,13 +66,62 @@ export function noticeChanges(invConId) {
 
     // 1. Check if item is missing -> push item and set missing amount to conv amount
     // 2. Check if item amount has changed
+    let originalInv = invStates.get(invConId).saveCon
+    let viewer = invStates.get(invConId).owner
     
+    let congen = world.getEntity(invConId)
+    let currentInv = congen.getComponent("minecraft:inventory").container
+
+    /**
+     * @type {Map<ItemStack, number>}
+     */
+    let missingItems = new Map()
+    for (let i = 0; i < currentInv.size; i++) {
+        const item = currentInv.getItem(i);
+        const oriItem = originalInv[i];
+
+        if(oriItem && (!item || oriItem.amount > item.amount)) {
+            // Item was removed
+            if(oriItem.typeId == "c:pageswitcher") continue
+            let amount = oriItem.amount
+            if(item) amount -= item.amount
+
+            let noMatch = true
+            for(const [key, value] of missingItems) {
+                if(key.isStackableWith(oriItem)) {
+                    if(value + amount == 0) missingItems.delete(key)
+                    else missingItems.set(key, value+amount)
+                    noMatch = false
+                    break;
+                }
+            }
+            if(noMatch) missingItems.set(oriItem, amount)
+        }
+        if(item && (!oriItem || item.amount > oriItem.amount)) {
+            // Item was added
+            if(item.typeId == "c:pageswitcher") continue
+            let amount = item.amount
+            if(oriItem) amount -= oriItem.amount
+
+            let noMatch = true
+            for(const [key, value] of missingItems) {
+                if(key.isStackableWith(item)) {
+                    if(value - amount == 0) missingItems.delete(key)
+                    else missingItems.set(key, value-amount)
+                    noMatch = false
+                    break;
+                }
+            }
+            if(noMatch) missingItems.set(item, -amount)
+        }
+    }
     // 1. Find item stack of missing conv item in players inv
     // 2. clear the instance if instance amount is lower than missing amount
     //    - Else set amount to amount thats left
     // 3. for every instance found substract the missing amount by the amount of the stack thats been found
     // 4. Note the misses left
     // 5. Search for item entity matches in world and remove as needed
+    let missesLeft = new Map(missingItems)
 
     // 1. Merge stacks of identical items (their amount)
     // 2. Find item stack in the viewers inv
