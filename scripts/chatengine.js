@@ -1,6 +1,6 @@
 import { world, Player, ItemStack, system, ChatSendBeforeEvent, EquipmentSlot} from "@minecraft/server";
 import { config } from "./config";
-import { getPlayer, rainbowart, send, getRanks, supString, serverMsg, setTimeout, getItemInfo, revive } from "./functionLib";
+import { getPlayer, rainbowart, send, getRanks, supString, serverMsg, setTimeout, getItemInfo, revive, updateInv } from "./functionLib";
 
 export function chatengine() {
 let prefix = config.cmdPrefix
@@ -75,8 +75,6 @@ function chatCallback(msg, perms) {
                 if(!args[1]) return send(msg.sender, `§7Du §9musst §7schon einen §cSpieler angeben§7, dessen Inventar du sehen möchtest... :P`)
                 var player = getPlayer(args[1]) 
                 if(!(player instanceof Player)) return send(msg.sender, `§7Dieser Spieler §cexistiert nicht`)
-                var name = player.nameTag;
-                var inv = player.getComponent("minecraft:inventory").container;
                 var sender = msg.sender;
                 system.run(()=>msg.sender.triggerEvent("c:spawn_inv"))
 
@@ -90,41 +88,9 @@ function chatCallback(msg, perms) {
                     
                     var viewingen = [...world.getDimension("overworld").getEntities(enOpt)][0]
                     if(!viewingen) return;
-                    let headRot = sender.getHeadLocation()
-                    viewingen.runCommand(`tp @s ${headRot.x} ${headRot.y} ${headRot.z}`)
-                    viewingen.nameTag=name+"'s Inventory§r";
-
-                    let viewingcon = viewingen.getComponent("minecraft:inventory").container
-
-                    for (let i = 0; i < inv.size; i++) {
-                        if(inv.getItem(i)) {
-                            var item = inv.getItem(i);
-                            var lore = item.getLore()
-                            if(i<9) {lore.push("§r§8[Hotbar Slot "+(i+1)+"]")} else {lore.push("§r§8[Inventory Slot "+(i-8)+"]")}
-                            item.setLore(lore)
-                            
-                            item = getItemInfo(item,player)
-
-                            var slot = i;
-                            if(i>17) slot=slot+9
-                            viewingcon.setItem(slot, item)
-                        }
-                    }
-
-                    let equip = player.getComponent("minecraft:equipment_inventory")
-
-                    viewingcon.setItem(20, getItemInfo(equip.getEquipment(EquipmentSlot.head), player, "§r§8[Equipment Slot Head]"))
-                    viewingcon.setItem(21, getItemInfo(equip.getEquipment(EquipmentSlot.chest), player, "§r§8[Equipment Slot Chest]"))
-                    viewingcon.setItem(22, getItemInfo(equip.getEquipment(EquipmentSlot.legs), player, "§r§8[Equipment Slot Legs]"))
-                    viewingcon.setItem(23, getItemInfo(equip.getEquipment(EquipmentSlot.feet), player, "§r§8[Equipment Slot Feet]"))
-                    viewingcon.setItem(24, getItemInfo(equip.getEquipment(EquipmentSlot.offhand), player, "§r§8[Offhand Slot]"))
-
-                    viewingen.runCommand(`replaceitem entity @s slot.inventory 26 c:pageswitcher 1 0`)
-                    var pointer = viewingcon.getItem(26)
-                    pointer.nameTag="§r§l§aNext Page";
-                    viewingcon.setItem(26,pointer)
-                    viewingen.runCommand(`replaceitem entity @s slot.inventory 18 air 1 0`)
-                    viewingen.runCommand(`tag @s add c_ready`)
+                    viewingen.teleport(sender.getHeadLocation())
+                    updateInv(player, viewingen)
+                    viewingen.addTag("c_ready")
                 }, 150)
                 break;
             case "install":

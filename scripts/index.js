@@ -1,7 +1,7 @@
-import { world, MinecraftBlockTypes, system, ItemStack, ItemTypes } from "@minecraft/server"
+import { world, MinecraftBlockTypes, system, ItemStack, ItemTypes, Player } from "@minecraft/server"
 import { chatengine } from "./chatengine";
 import { config } from "./config";
-import { getGamemode, send, updateInv } from "./functionLib";
+import { broad, getGamemode, send, updateInv } from "./functionLib";
 import {} from "./killcounter";
 var dm = world.getDimension("overworld");
 
@@ -18,14 +18,15 @@ system.runInterval(() => {
     entities.forEach(entity => {
         if(entity.nameTag.slice(entity.nameTag.length-2)=="§r") {
             var conv = entity.getComponent("minecraft:inventory").container;
+
+            // Main Flip sequence
             conv.setItem(26)
-            // entity.runCommand(`replaceitem entity @s slot.inventory 26 air 1 0`)
             for (let i = 0; i < 18; i++) {
                 let item = conv.getItem(i+27)
-                if(item) {conv.setItem(i, item)} else {entity.runCommand(`replaceitem entity @s slot.inventory ${i} air`)}
+                conv.setItem(i, item)
             }
-            // entity.runCommand(`replaceitem entity @s slot.inventory 18 c:pageswitcher 1 0`)
-            // var pointer = conv.getItem(18)
+
+            // End & Set Pointer
             var pointer = new ItemStack(ItemTypes.get("c:pageswitcher"),1)
             pointer.nameTag="§r§l§cBack";
             pointer.setLore(["§r§7This may refresh the Inventory"]);
@@ -53,7 +54,7 @@ chatengine()
 
 world.beforeEvents.itemUseOn.subscribe(event=>{
     if(event.source.hasTag("packetblock")==true) event.cancel=true;
-    if(event.source.typeId=="minecraft:player") {
+    if(event.source instanceof Player && !event.source.isOp()) {
         let gm = getGamemode(event.source)
         if(gm!=1) {
             config.forbiddenBlocks.forEach(block => {

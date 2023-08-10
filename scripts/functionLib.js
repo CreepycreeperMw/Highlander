@@ -2,15 +2,25 @@ import { world, Player, system, EquipmentSlot, ItemStack, ItemLockMode, Entity, 
 import { config } from "./config";
 
 /**
- * 
- * @param {Player} player 
- * @param {Entity} viewingen 
+ * @type {Map<number, {saveCon:(ItemStack|undefined)[], owner: Player}}
  */
-export function updateInv(player, viewingen, firstPage=true, reload=true) {
+export let invStates = new Map()
+/**
+ * 
+ * @param {Player} player Player to display the inventory of
+ * @param {Entity} viewingen Entity attached to the Inventory Holder
+ * @param {Player} viewer 
+ * @param {string} [id] Id to save this operation to. Consider using the viewers player id as this id.
+ * @param {boolean} [firstPage=true] 
+ * @param {boolean} [reload=true] 
+ */
+export function updateInv(player, viewingen, viewer, firstPage=true, reload=true) {
     var inv = player.getComponent("minecraft:inventory").container;
     viewingen.nameTag=player.nameTag+"'s Inventory§r";
 
     var viewingcon = viewingen.getComponent("minecraft:inventory").container
+    let saveCon = []
+    saveCon.length = inv.size
 
     for (let i = 0; i < inv.size; i++) {
         var slot = i;
@@ -18,6 +28,8 @@ export function updateInv(player, viewingen, firstPage=true, reload=true) {
 
         if(inv.getItem(i)) {
             var item = inv.getItem(i);
+            saveCon[i] = item
+
             var lore = item.getLore()
             if(i<9) {lore.push("§r§8[Hotbar Slot "+(i+1)+"]")} else {lore.push("§r§8[Inventory Slot "+(i-8)+"]")}
             item.setLore(lore)
@@ -26,7 +38,6 @@ export function updateInv(player, viewingen, firstPage=true, reload=true) {
             viewingcon.setItem(slot, item)
         } else {viewingen.runCommand(`replaceitem entity @s slot.inventory ${slot} air`)}
     }
-
     
     let equip = player.getComponent("minecraft:equipment_inventory")
 
@@ -36,11 +47,45 @@ export function updateInv(player, viewingen, firstPage=true, reload=true) {
     viewingcon.setItem(23, getItemInfo(equip.getEquipment(EquipmentSlot.feet),player,"§r§8[Equipment Slot Feet]"))
     viewingcon.setItem(24, getItemInfo(equip.getEquipment(EquipmentSlot.offhand),player,"§r§8[Offhand Slot]"))
 
-    viewingen.runCommand(`replaceitem entity @s slot.inventory 18 air`)
-    viewingen.runCommand(`replaceitem entity @s slot.inventory 26 c:pageswitcher 1 0`)
-    var pointer = viewingcon.getItem(26)
+    viewingcon.setItem(18)
+    var pointer = new ItemStack(ItemTypes.get("c:pageswitcher"),1)
     pointer.nameTag="§r§l§aNext Page";
     viewingcon.setItem(26,pointer)
+
+    invStates.set(viewingen.id, {saveCon, owner:viewer})
+}
+
+/**
+ * Checks for what changes have been made in the inventory and processes these
+ * @param {number} invConId Inventory Container to check referenced by its entity id
+ */
+export function noticeChanges(invConId) {
+    // 1. Check Con Hotbar Slots
+    // 2. Check Con Inventory slots
+    // 3. Check Con Armor & Offhand Slots
+
+    // 1. Check if item is missing -> push item and set missing amount to conv amount
+    // 2. Check if item amount has changed
+    
+    // 1. Find item stack of missing conv item in players inv
+    // 2. clear the instance if instance amount is lower than missing amount
+    //    - Else set amount to amount thats left
+    // 3. for every instance found substract the missing amount by the amount of the stack thats been found
+    // 4. Note the misses left
+    // 5. Search for item entity matches in world and remove as needed
+
+    // 1. Merge stacks of identical items (their amount)
+    // 2. Find item stack in the viewers inv
+    // 3. Replace all matches with the actual item
+    // 4. if not strict set amount to amount of player inv
+    // 5. else keep doing so until total amount wanted overdid (original amount - missing items)
+    //  -> then set amount to remaining amount and clear all other instances
+
+    // STRICT MODE RULES
+    // - Enable Strict Mode if in Survival and no op or admin
+    // - Disable Strict Mode if in creative
+    // - Always enable strict mode if setting forceStrictMode is true
+    // - Always disable strict mode if setting strictMode is false
 }
 
 /**
