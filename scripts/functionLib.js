@@ -73,7 +73,7 @@ export function noticeChanges(invConId) {
     let currentInv = congen.getComponent("minecraft:inventory").container
 
     /**
-     * @type {Map<ItemStack, number>}
+     * @type {Map<ItemStack, {amount:number, affectedSlots: number[]}>}
      */
     let missingItems = new Map()
     for (let i = 0; i < currentInv.size; i++) {
@@ -89,13 +89,13 @@ export function noticeChanges(invConId) {
             let noMatch = true
             for(const [key, value] of missingItems) {
                 if(key.isStackableWith(oriItem)) {
-                    if(value + amount == 0) missingItems.delete(key)
-                    else missingItems.set(key, value+amount)
+                    if(value.amount + amount == 0) missingItems.delete(key)
+                    else missingItems.set(key, {amount: value.amount+amount, affectedSlots:[...value.affectedSlots, i]})
                     noMatch = false
                     break;
                 }
             }
-            if(noMatch) missingItems.set(oriItem, amount)
+            if(noMatch) missingItems.set(oriItem, {amount,affectedSlots:[i]})
         }
         if(item && (!oriItem || item.amount > oriItem.amount)) {
             // Item was added
@@ -106,8 +106,8 @@ export function noticeChanges(invConId) {
             let noMatch = true
             for(const [key, value] of missingItems) {
                 if(key.isStackableWith(item)) {
-                    if(value - amount == 0) missingItems.delete(key)
-                    else missingItems.set(key, value-amount)
+                    if(value.amount - amount == 0) missingItems.delete(key)
+                    else missingItems.set(key, value.amount-amount)
                     noMatch = false
                     break;
                 }
