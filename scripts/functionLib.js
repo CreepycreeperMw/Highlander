@@ -1,4 +1,4 @@
-import { world, Player, system, EquipmentSlot, ItemStack, ItemLockMode, Entity, Vector, MolangVariableMap} from "@minecraft/server";
+import { world, Player, system, EquipmentSlot, ItemStack, ItemLockMode, Entity, Vector, MolangVariableMap, ItemTypes} from "@minecraft/server";
 import { config } from "./config";
 
 /**
@@ -319,7 +319,7 @@ export function send(player, text, prefix) {
 }
 
 export function noCmd(player) {
-    return player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"${config.chatPrefix} §cCannot find this Command X_X"}]}`)
+    return player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"${config.chatPrefix} §cIch kann diesen Command nicht finden X_X"}]}`)
 }
 
 export function serverMsg(selector, text) {
@@ -356,6 +356,11 @@ export function getCode(count) {
     return result;
 }
 
+/**
+ * Gets the gamemode of a player
+ * @param {Player} player 
+ * @returns 
+ */
 export function getGamemode(player) {
     for (let i = 0; i < 9; i++) {
         try{

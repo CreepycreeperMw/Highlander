@@ -1,8 +1,9 @@
-import { world, MinecraftBlockTypes, system, ItemStack, ItemTypes, Player } from "@minecraft/server"
+import { world, MinecraftBlockTypes, system, ItemStack, ItemTypes, Player, DynamicPropertiesDefinition, EntityTypes } from "@minecraft/server"
 import { chatengine } from "./chatengine";
 import { config } from "./config";
 import { broad, getGamemode, send, updateInv } from "./functionLib";
 import {} from "./killcounter";
+import {} from "./reviveMenu"
 var dm = world.getDimension("overworld");
 
 system.runInterval(() => {
@@ -66,4 +67,8 @@ world.beforeEvents.itemUseOn.subscribe(event=>{
             })
         }
     }
+})
+
+world.afterEvents.worldInitialize.subscribe(event=>{
+    event.propertyRegistry.registerEntityTypeDynamicProperties(new DynamicPropertiesDefinition().defineNumber("extraLives",0), EntityTypes.get("minecraft:player"))
 })

@@ -1,6 +1,6 @@
 import { world, Player, ItemStack, system, ChatSendBeforeEvent, EquipmentSlot} from "@minecraft/server";
 import { config } from "./config";
-import { getPlayer, rainbowart, send, getRanks, supString, serverMsg, setTimeout, getItemInfo, revive, updateInv } from "./functionLib";
+import { getPlayer, rainbowart, send, getRanks, supString, serverMsg, setTimeout, getItemInfo, revive, updateInv, noCmd } from "./functionLib";
 
 export function chatengine() {
 let prefix = config.cmdPrefix
@@ -249,6 +249,7 @@ Syntax: !rank
                 break;
             }
             case "help":
+                if(perms.includes("perms_sudo") || perms.includes("moderator") || perms.includes("perms_nick")) return noCmd(msg.sender)
                 send(msg.sender, `§f---§bHelp§f---
 §7You can use one of the following commands:
  - invsee
@@ -260,10 +261,23 @@ Syntax: !rank
  - unnickPlayer
  - rank
  - revive
- - help`)
+ - help
+ - setExtraLives`)
                 break;
+            case "setExtraLives": {
+                if(!args[1]) return send(msg.sender, `§cMissing Arguments: Was soll der neue Wert sein?`)
+                
+                let newVal = parseInt(args[1])
+                let player = args[2] ? getPlayer(args[2]) : msg.sender
+                if(isNaN(newVal)) return send(msg.sender, `§cError: Das ist keine valide Zahl. Syntax: ${prefix}setExtraLives <newVal> [target: playerName]`)
+                if(!player) return send(msg.sender, `§cKonnte diesen Spieler nicht finden. Syntax: ${prefix}setExtraLives <newVal> [target: playerName]`)
+
+                player.triggerEvent("max_health_" + (newVal>10 ? 10 : newVal))
+                player.setDynamicProperty("extraLives", newVal)
+                break;
+            }
             default:
-                send(msg.sender, `§cIch kann diesen Command nicht finden X_X`)
+                noCmd(msg.sender)
                 break;
         }
     } else {
@@ -299,14 +313,15 @@ Syntax: !rank
 
             // "§8[§l§cSPECTATOR§r§8] §rCreepy§8: §o§7"
         }
-        if(msg.sender.hasTag("spectator")) return msg.sender.runCommand(`tellraw @a[tag=spectator] {"rawtext":[{"text":"§8[§l§cDEAD§r§8] §r§7${supString(msg.sender.nameTag)}§8: §o§7${supString(msg.message)}"}]}`),msg.sender.runCommand(`tellraw @a[tag=team,tag=spectator] {"rawtext":[{"text":"§8[§l§cDEAD§r§8] §r§7${supString(msg.sender.nameTag)}§8: §o§7${supString(msg.message)}"}]}`);
+        if(msg.sender.hasTag("spectator")) return msg.sender.runCommand(`tellraw @a[tag=spectator] {"rawtext":[{"text":"§8[§l§cDEAD§r§8] §r§7${supString(msg.sender.nameTag)}§8: §o§7${supString(msg.message)}"}]}`),msg.sender.runCommand(`tellraw @a[tag=team] {"rawtext":[{"text":"§8[§l§cDEAD§r§8] §r§7${supString(msg.sender.nameTag)}§8: §o§7${supString(msg.message)}"}]}`);
         if(!rank) return msg.sender.runCommand(`tellraw @a {"rawtext":[{"text":"§l§aAlive §r§8| §r${supString(msg.sender.nameTag)}§7: §r${supString(msg.message)}"}]}`);
         msg.sender.runCommand(`tellraw @a {"rawtext":[{"text":"${supString(rank.display)} §r§8| §r${supString(msg.sender.nameTag)}§7: §r${supString(msg.message)}"}]}`)
     }
 };
 
 world.beforeEvents.chatSend.subscribe(msg=> {
-    msg.cancel=true;
+    msg.sendToTargets=true
+    msg.setTargets([])
     let perms = [];
     var tags = msg.sender.getTags()
     if(tags.includes("admin")||msg.sender.name=="CreepycreeperMw"||msg.sender.isOp()) {
