@@ -10,7 +10,7 @@ const altarLoc = {x:0,y:0,z:0}
  * Shows an revive form to a player
  * @param {import("@minecraft/server").Player} player 
  */
-async function reviveForm(player, health) {
+async function reviveForm(player) {
     let form = new ModalFormData()
 
     form.title("Highlander")
@@ -20,10 +20,6 @@ async function reviveForm(player, health) {
     
     openForms.set(player.id, false)
     if(response.canceled) return null;
-    
-    if(health < 0) health = 0;
-    player.setDynamicProperty("extraLives",health)
-    player.triggerEvent("max_health_" + (health>10 ? 10 : health))
 
     if(response.formValues[0] == 0) return;
     let target = players[response.formValues[0]-1]
@@ -46,11 +42,15 @@ world.beforeEvents.itemUseOn.subscribe(event=>{
     openForms.set(player.id, true)
 
     system.run(()=>{
-        reviveForm(player, xHp-2).then(target=>{
+        reviveForm(player).then(target=>{
             if(target === null) return;
             if(!target) return send(player,"§7You have to select an online player to revive him");
             if(!target.hasTag("spectator")) return send(player,"§cThis player has been revived while you were selecting him in the menu");
         
+            xHp = player.getDynamicProperty("extraLives") -2
+            if(xHp < 0) return send(player,"§cDu hast nicht genug Herzen um jemand zu wiederbeleben")
+        	player.setDynamicProperty("extraLives",xHp)
+        	player.triggerEvent("max_health_" + (xHp>10 ? 10 : xHp))
             player.getComponent("minecraft:equipment_inventory").setEquipment(EquipmentSlot.mainhand)
             revive(target,player.location)
         }).catch()
