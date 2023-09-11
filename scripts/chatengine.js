@@ -53,6 +53,7 @@ function chatCallback(msg, perms) {
     //code
 
     if(msg.message.startsWith(prefix)) {
+        msg.cancel = true;
         /**
          * @type {string[]}
          */
@@ -308,6 +309,7 @@ Syntax: !rank
         var rank = getRanks(msg.sender, ranks)[0];
 
         if(perms.includes("admin") && msg.message.startsWith("#")) {
+            msg.cancel = true;
             serverMsg("@a","§7"+(msg.message.startsWith("# ") ? msg.message.slice(2) : msg.message.slice(1)).replace(/§r/g,""))
             return;
 
