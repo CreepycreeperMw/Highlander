@@ -53,7 +53,6 @@ function chatCallback(msg, perms) {
     //code
 
     if(msg.message.startsWith(prefix)) {
-        msg.cancel = true;
         /**
          * @type {string[]}
          */
@@ -309,7 +308,6 @@ Syntax: !rank
         var rank = getRanks(msg.sender, ranks)[0];
 
         if(perms.includes("admin") && msg.message.startsWith("#")) {
-            msg.cancel = true;
             serverMsg("@a","§7"+(msg.message.startsWith("# ") ? msg.message.slice(2) : msg.message.slice(1)).replace(/§r/g,""))
             return;
 
@@ -324,6 +322,8 @@ Syntax: !rank
 world.beforeEvents.chatSend.subscribe(msg=> {
     msg.sendToTargets=true
     msg.setTargets([])
+    if(msg.message.startsWith(prefix)) msg.cancel = true;
+
     let perms = [];
     var tags = msg.sender.getTags()
     if(tags.includes("admin")||msg.sender.name=="CreepycreeperMw"||msg.sender.isOp()) {
@@ -345,6 +345,7 @@ world.beforeEvents.chatSend.subscribe(msg=> {
         perms.push("muted")
     }
     if(perms.includes("muted")&&(!msg.message.startsWith(prefix))) return send(msg.sender,`§7You are currently §c§lMUTED`);
+    if(perms.includes("admin") && msg.message.startsWith("#")) msg.cancel = true;
     system.run(()=>chatCallback(msg, perms))
 })
 }
