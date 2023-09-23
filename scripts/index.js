@@ -1,7 +1,7 @@
 import { world, MinecraftBlockTypes, system, ItemStack, ItemTypes, Player, DynamicPropertiesDefinition, EntityTypes } from "@minecraft/server"
 import { chatengine } from "./chatengine";
 import { config } from "./config";
-import { broad, getGamemode, send, updateInv } from "./functionLib";
+import { broad, getGamemode, send, setTimeout, updateInv } from "./functionLib";
 import {} from "./killcounter";
 import {} from "./reviveMenu"
 var dm = world.getDimension("overworld");
@@ -56,6 +56,10 @@ chatengine()
 world.beforeEvents.itemUseOn.subscribe(event=>{
     if(event.source.hasTag("packetblock")==true) event.cancel=true;
     if(event.source instanceof Player && !event.source.isOp()) {
+        if(event.itemStack.typeId.toLowerCase()=="minecraft:ender_eye" && event.block.typeId.toLowerCase()=="minecraft:end_portal_frame") {
+            event.cancel=true;
+            send(event.source, "§7Unfortunately, ender eyes have been disabled.")
+        }
         let gm = getGamemode(event.source)
         if(gm!=1) {
             config.forbiddenBlocks.forEach(block => {
@@ -70,5 +74,6 @@ world.beforeEvents.itemUseOn.subscribe(event=>{
 })
 
 world.afterEvents.worldInitialize.subscribe(event=>{
+    event.propertyRegistry.registerWorldDynamicProperties(new DynamicPropertiesDefinition().defineString("combatLoggedPlayers",10000,""))
     event.propertyRegistry.registerEntityTypeDynamicProperties(new DynamicPropertiesDefinition().defineNumber("extraLives",0), EntityTypes.get("minecraft:player"))
 })

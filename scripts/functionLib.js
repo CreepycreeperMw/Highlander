@@ -313,6 +313,7 @@ export function delay(delay) {
  * Send a message to a player using your configurated prefix
  * @param {Player} player player(s) to broadcast the message to
  * @param {string} text text to display to the player. Use any character " and \ are also supported like normal.
+ * @param {string} [prefix] 
  */
 export function send(player, text, prefix) {
     return player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"${prefix??config.chatPrefix} ${text.replace(/\\/gi, "\\\\").replace(/\"/gi, "\\\"")}"}]}`)

@@ -112,6 +112,7 @@ function chatCallback(msg, perms) {
                 if(!args[1]) return send(msg.sender, `§cDu dummer Spast musst auch n Spieler angeben..... Sorry`)
                 let newSender = getPlayer(args[1]);
                 if(!newSender) return send(msg.sender, `§cKonnte diesen Spieler §lnicht §r§cfinden!`)
+                newSender.sendMessage = msg.sender.sendMessage
                 var nmsg={};
                 var number = 0;
                 if(msg.message.indexOf("\"")==prefix.length+5) {number=2}
@@ -249,7 +250,7 @@ Syntax: !rank
                 break;
             }
             case "help":
-                if(perms.includes("perms_sudo") || perms.includes("moderator") || perms.includes("perms_nick")) return noCmd(msg.sender)
+                if(!(perms.includes("perms_sudo") || perms.includes("moderator") || perms.includes("perms_nick"))) return noCmd(msg.sender)
                 send(msg.sender, `§f---§bHelp§f---
 §7You can use one of the following commands:
  - invsee
@@ -274,6 +275,21 @@ Syntax: !rank
 
                 player.triggerEvent("max_health_" + (newVal>10 ? 10 : newVal))
                 player.setDynamicProperty("extraLives", newVal)
+                break;
+            }
+            case "test":
+                console.warn(world.getDynamicProperty("combatLoggedPlayers"))
+                break;
+            case "getPlayerId":{
+                var pl = getPlayer(args[1])
+                if(!pl) return send(msg.sender,"§cNot a player")
+
+                msg.sender.sendMessage(pl.id)
+                break;
+            }
+            case "itemInfo":{
+                let item = getItemInfo(msg.sender.getComponent("minecraft:inventory").container.getItem(msg.sender.selectedSlot), msg.sender)
+                send(msg.sender,`§7Item Info: §r§7\n - Name: ${item.nameTag ?? "None"}§r§7\n - Id: §8${item.typeId}§r§7\n - ${[...item.getLore(),"§7Tags: §8"+(item.getTags().join(", ") || "None")].join("§r§7\n - ")}`)
                 break;
             }
             default:
@@ -313,7 +329,7 @@ Syntax: !rank
 
             // "§8[§l§cSPECTATOR§r§8] §rCreepy§8: §o§7"
         }
-        if(msg.sender.hasTag("spectator")) return msg.sender.runCommand(`tellraw @a[tag=spectator] {"rawtext":[{"text":"§8[§l§cDEAD§r§8] §r§7${supString(msg.sender.nameTag)}§8: §o§7${supString(msg.message)}"}]}`),msg.sender.runCommand(`tellraw @a[tag=team] {"rawtext":[{"text":"§8[§l§cDEAD§r§8] §r§7${supString(msg.sender.nameTag)}§8: §o§7${supString(msg.message)}"}]}`);
+        if(msg.sender.hasTag("spectator")) return msg.sender.runCommand(`tellraw @a[tag=spectator] {"rawtext":[{"text":"§8[§l§cDEAD§r§8] §r§7${supString(msg.sender.nameTag)}§8: §o§7${supString(msg.message)}"}]}`),msg.sender.runCommand(`tellraw @a[tag=team,tag=!spectator] {"rawtext":[{"text":"§8[§l§cDEAD§r§8] §r§7${supString(msg.sender.nameTag)}§8: §o§7${supString(msg.message)}"}]}`);
         if(!rank) return msg.sender.runCommand(`tellraw @a {"rawtext":[{"text":"§l§aAlive §r§8| §r${supString(msg.sender.nameTag)}§7: §r${supString(msg.message)}"}]}`);
         msg.sender.runCommand(`tellraw @a {"rawtext":[{"text":"${supString(rank.display)} §r§8| §r${supString(msg.sender.nameTag)}§7: §r${supString(msg.message)}"}]}`)
     }

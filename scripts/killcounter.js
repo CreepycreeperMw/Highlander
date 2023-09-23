@@ -11,9 +11,13 @@ let playerHit = new Map()
  */
 let combatCooldown = new Map()
 /**
- * @type {Map<number, number>}
+ * @type {Map<number, string[]>}
  */
 let killsDue = new Map()
+/**
+ * @type {Map<string, number>}
+ */
+let extraHp = new Map()
 const cooldownTime = 40000
 /**
  * 
@@ -94,5 +98,30 @@ world.afterEvents.playerSpawn.subscribe(({player, initialSpawn})=>{
         }
         player.triggerEvent("max_health_" + (xHp>10 ? 10 : xHp))
         killsDue.set(player.id, 0)
+        
+        if(world.getDynamicProperty("combatLoggedPlayers").includes(player.id+";")) {
+            world.setDynamicProperty("combatLoggedPlayers",world.getDynamicProperty("combatLoggedPlayers").replace(player.id+";",""))
+            combatCooldown.delete(player.id)
+
+            player.setDynamicProperty("extraLives",0)
+            player.triggerEvent("max_health_0")
+            player.runCommand("gamemode spectator")
+            player.addTag("spectator")
+            deathpoint.set(player.id, {loc:player.location,rot:player.getRotation()})
+
+            player.kill()
+        }
+    }
+})
+
+world.afterEvents.playerLeave.subscribe(evt=>{
+    if(combatCooldown.has(evt.playerId) && (new Date().getTime() - combatCooldown.get(evt.playerId)) < cooldownTime) {
+        eliminate(evt.playerId, evt.playerName, " §7due to combat logging")
+        
+        let killerId = playerHit.get(evt.playerId)
+        let killer = world.getEntity(killerId)
+        if(killer instanceof Player) {
+            send(killer, "§7A player who was in combat with you has combat logged. He will die and drop his stuff once he rejoins.")
+        }
     }
 })
