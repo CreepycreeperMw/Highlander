@@ -316,11 +316,11 @@ export function delay(delay) {
  * @param {string} [prefix] 
  */
 export function send(player, text, prefix) {
-    return player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"${prefix??config.chatPrefix} ${text.replace(/\\/gi, "\\\\").replace(/\"/gi, "\\\"")}"}]}`)
+    return player.sendMessage({"rawtext":[{"text":`${prefix??config.chatPrefix} ${text.replace(/\\/gi, "\\\\").replace(/\"/gi, "\\\"")}`}]})
 }
 
 export function noCmd(player) {
-    return player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"${config.chatPrefix} §cIch kann diesen Command nicht finden X_X"}]}`)
+    return player.sendM({"rawtext":[{"text":config.chatPrefix + " §cIch kann diesen Command nicht finden X_X"}]})
 }
 
 export function serverMsg(selector, text) {
