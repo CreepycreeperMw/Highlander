@@ -68,6 +68,7 @@ function chatCallback(msg, perms) {
                 args.push(curr.replace(/»/gi, '\\"'));
             }
         });
+        if(args[args.length-1]=="") args.pop();
 
         switch(args[0]) {
             case "invsee":
@@ -112,11 +113,14 @@ function chatCallback(msg, perms) {
                 if(!args[1]) return send(msg.sender, `§cDu dummer Spast musst auch n Spieler angeben..... Sorry`)
                 let newSender = getPlayer(args[1]);
                 if(!newSender) return send(msg.sender, `§cKonnte diesen Spieler §lnicht §r§cfinden!`)
-                newSender.sendMessage = msg.sender.sendMessage
+                // newSender = {...newSender, sendMessage: msg.sender.sendMessage};
                 var nmsg={};
                 var number = 0;
                 if(msg.message.indexOf("\"")==prefix.length+5) {number=2}
                 nmsg.sender=newSender;
+                // Object.getOwnPropertyNames(newSender).forEach((prop)=>{nmsg.sender[prop]=msg.sender[prop];console.warn(prop)})
+                // nmsg.sender.sendMessage = msg.sender.sendMessage;
+                // nmsg.sender.sendMessage = msg.sender.sendMessage;
                 nmsg.message=msg.message.slice(prefix.length+6+args[1].length+number);
                 
                 if(nmsg.message.startsWith("/")) {
