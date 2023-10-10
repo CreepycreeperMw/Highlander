@@ -34,6 +34,52 @@ function invincibilityNotifier(player, time = cooldownTime) {
     },time)
 }
 
+/**
+ * Eliminates a player from the event. Eliminated Players can still
+ * spectate the event but not interact with it.
+ * @param {string} playerId Id of the player to eliminate
+ * @param {string} nameTag Name of the player to eliminate
+ * @param {string} suffix Additional info / text appended at the end of the deathmsg
+ * @param {boolean} [ackKnowledgeDeath=true] Wether the death should be announced in chat.
+ * Defaults to true
+ */
+export function eliminate(playerId, nameTag, suffix = "", ackKnowledgeDeath = true) {
+    let killerId = playerHit.get(playerId)
+
+    let killer = world.getEntity(killerId)
+    let player = world.getEntity(playerId)
+
+    if(!killer || !killer.isValid()) {
+        killsDue.get(killerId).push(playerId)
+    } else {
+        let health = killer.getDynamicProperty("extraLives")+
+        ((player?.getDynamicProperty("extraLives") ?? extraHp.get(playerId))/2 || 1)
+        let healthComponent = killer.getComponent("minecraft:health")
+        let hp = healthComponent.currentValue
+        killer.setDynamicProperty("extraLives",health)
+        killer.triggerEvent("max_health_" + (health>10 ? 10 : health))
+        healthComponent.setCurrentValue(hp+((player?.getDynamicProperty("extraLives") ?? extraHp.get(playerId))/2 || 1))
+    }
+    
+    if(!player || !player.isValid()) {
+        world.setDynamicProperty("combatLoggedPlayers",world.getDynamicProperty("combatLoggedPlayers")+";"+playerId)
+    } else {
+        player.setDynamicProperty("extraLives",0)
+        player.triggerEvent("max_health_0")
+        player.runCommand("gamemode spectator")
+        player.addTag("spectator")
+        deathpoint.set(playerId, {loc:player.location,rot:player.getRotation()})
+    }
+    if(ackKnowledgeDeath) {
+        (player?.dimension ?? killer?.dimension ?? world.getDimension("overworld")).runCommandAsync("execute as @a at @s run playsound ambient.weather.thunder @s")
+        combatCooldown.delete(playerId)
+
+        broad("§l§cDeath§r§8>> §c"+nameTag+" §7has been eliminated"+suffix)        
+    }        
+    // player.dimension.spawnEntity("minecraft:lightning_bolt",player.location)
+    // hurtEntity.dimension.runCommandAsync("execute as @a at @s run playsound ambient.weather.lightning.impact @s")
+}
+
 world.afterEvents.entityHurt.subscribe(({hurtEntity, damageSource, damage})=>{
     if(!(hurtEntity instanceof Player)) return;
 
@@ -50,32 +96,7 @@ world.afterEvents.entityHurt.subscribe(({hurtEntity, damageSource, damage})=>{
     if(hurtEntity.getComponent("minecraft:health").currentValue<=0) {
         hurtEntity.addTag("dead")
         if(combatCooldown.has(hurtEntity.id) && (new Date().getTime() - combatCooldown.get(hurtEntity.id)) < cooldownTime) {
-            
-            // Spieler ist tot
-            let killerId = playerHit.get(hurtEntity.id)
-            let killer = world.getEntity(killerId)
-            if(!killer || !killer.isValid()) {
-                killsDue.set(killerId,killsDue.get(killerId)+1)
-            } else {
-                let health = killer.getDynamicProperty("extraLives")+1
-                let healthComponent = killer.getComponent("minecraft:health")
-                let hp = healthComponent.currentValue
-                killer.setDynamicProperty("extraLives",health)
-                killer.triggerEvent("max_health_" + (health>10 ? 10 : health))
-                healthComponent.setCurrentValue(hp+2)
-            }
-            
-            hurtEntity.setDynamicProperty("extraLives",0)
-            hurtEntity.triggerEvent("max_health_0")
-            
-            // player.dimension.spawnEntity("minecraft:lightning_bolt",player.location)
-            // hurtEntity.dimension.runCommandAsync("execute as @a at @s run playsound ambient.weather.lightning.impact @s")
-            combatCooldown.delete(hurtEntity.id)
-            hurtEntity.dimension.runCommandAsync("execute as @a at @s run playsound ambient.weather.thunder @s")
-            broad("§l§cDeath§r§8>> §c"+hurtEntity.nameTag+" §7has been eliminated")
-            hurtEntity.runCommand("gamemode spectator")
-            hurtEntity.addTag("spectator")
-            deathpoint.set(hurtEntity.id, {loc:hurtEntity.location,rot:hurtEntity.getRotation()})
+            eliminate(hurtEntity.id, hurtEntity.nameTag)
         }
     }
 })
