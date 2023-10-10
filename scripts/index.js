@@ -1,4 +1,4 @@
-import { world, MinecraftBlockTypes, system, ItemStack, ItemTypes, Player, DynamicPropertiesDefinition, EntityTypes } from "@minecraft/server"
+import { world, system, ItemStack, ItemTypes, Player, DynamicPropertiesDefinition, EntityTypes } from "@minecraft/server"
 import { chatengine } from "./chatengine";
 import { config } from "./config";
 import { broad, getGamemode, send, setTimeout, updateInv } from "./functionLib";
