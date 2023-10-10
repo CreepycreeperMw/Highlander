@@ -1,6 +1,6 @@
 import { world, Player, ItemStack, system, ChatSendBeforeEvent, EquipmentSlot} from "@minecraft/server";
 import { config } from "./config";
-import { getPlayer, rainbowart, send, getRanks, supString, serverMsg, setTimeout, getItemInfo, revive, updateInv, noCmd } from "./functionLib";
+import { getPlayer, rainbowart, send, getRanks, supString, serverMsg, setTimeout, getItemInfo, revive, updateInv, noCmd, spreadPlayerAnimation } from "./functionLib";
 
 export function chatengine() {
 let prefix = config.cmdPrefix
@@ -267,7 +267,10 @@ Syntax: !rank
  - rank
  - revive
  - help
- - setExtraLives`)
+ - setExtraLives
+ - test
+ - getPlayerId
+ - itemInfo`)
                 break;
             case "setExtraLives": {
                 if(!args[1]) return send(msg.sender, `§cMissing Arguments: Was soll der neue Wert sein?`)
@@ -296,6 +299,9 @@ Syntax: !rank
                 send(msg.sender,`§7Item Info: §r§7\n - Name: ${item.nameTag ?? "None"}§r§7\n - Id: §8${item.typeId}§r§7\n - ${[...item.getLore(),"§7Tags: §8"+(item.getTags().join(", ") || "None")].join("§r§7\n - ")}`)
                 break;
             }
+            case "spread":
+                spreadPlayerAnimation(msg.sender, {x:0,y:0,z:0}, parseInt(args[1]) || 100)
+                break;
             default:
                 noCmd(msg.sender)
                 break;

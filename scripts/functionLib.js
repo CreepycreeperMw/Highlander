@@ -386,3 +386,138 @@ export function revive(player, location, rotation) {
         else player.teleport(location)
     }
 }
+
+/**
+ * Spreads a player across the map
+ * @param {import("@minecraft/server").Vector3} location Location of the center to spread the player from
+ * @param {number} distance Distance to spread away from the center
+ */
+export function getSpreadLoc(location, distance, minDinstance=0) {
+    let x = Math.floor((Math.random()*2-1) * (distance-minDinstance))
+    if(x < 0) x-=minDinstance
+    else x+=minDinstance
+
+    let z = Math.floor((Math.random()*2-1) * (distance-minDinstance))
+    if(z < 0) z-=minDinstance
+    else z+=minDinstance
+
+    return {x: x+location.x, y:location.y, z: z+location.z}
+}
+
+/**
+ * 
+ * @param {Player} player 
+ * @param {import("@minecraft/server").Vector3} location 
+ * @param {number} distance 
+ * @param {number} minDistance
+ */
+export function spreadPlayerAnimation(player, location, distance, minDistance=0) {
+    player.camera.setCamera("minecraft:free", {
+        location: vectorAdd(player.location,{x:0,y:4,z:0}),
+        rotation: {x:0,y:90}
+    })
+
+    let firstLocation = player.location
+    if(player.dimension.getBlock(vectorAdd(firstLocation,{x:0,y:200,z:0})).isAir) {
+        firstLocation = vectorAdd(firstLocation,{y:200})
+    } else firstLocation = vectorReplace(firstLocation,{y:320})
+
+    player.camera.setCamera("minecraft:free", logReturn({
+        location: firstLocation,
+        rotation: {x: 90, y: player.getRotation().y},
+        easeOptions: {easeTime: 2, easeType: "in_out_sine"}
+    }))
+
+    let secondLocation = getSpreadLoc(location, distance, minDistance);
+
+    player.dimension.runCommandAsync(`tickingarea add ${secondLocation.x-10} 0 ${secondLocation.z-10} ${secondLocation.x+10} 0 ${secondLocation.z+10} spreadPlayer_${player.name.replace(/\W/,"-")} true`)
+
+    system.runTimeout(()=>{
+        player.camera.setCamera("minecraft:free", {
+            location: secondLocation,
+            rotation: {x:0,y:90},
+            easeOptions: {easeTime: 3.5, easeType: "in_out_sine"}
+        })
+    }, 40)
+    system.runTimeout(()=>{
+        let raycast = player.dimension.getBlockFromRay(
+            secondLocation,
+            {x:0, y:-320, z:0},
+            {maxDistance:400,includeLiquidBlocks:true,includePassableBlocks:false}
+        ) ?? player.dimension.getBlockFromRay(
+            vectorReplace(secondLocation, {y:320}),
+            {x:0, y:-320, z:0},
+            {maxDistance:400,includeLiquidBlocks:true,includePassableBlocks:false}
+        )
+
+        if(!raycast) {
+            player.teleport(secondLocation)
+            player.runCommand(`spreadplayers ~ ~ 0 2 @s`)
+        } else {
+            player.teleport(vectorReplace(secondLocation,{y:raycast.block.y+1}))
+        }
+    }, 75)
+
+    system.runTimeout(()=>{
+        player.dimension.runCommandAsync(`tickingarea remove spreadPlayer_${player.name.replace(/\W/,"-")}`)
+
+        player.camera.setCamera("minecraft:free", {
+            location: vectorAdd(
+                player.getHeadLocation(),
+                vectorReplace(
+                    vectorMultiply(player.getViewDirection(),-3),
+                    {y:0}
+                )
+            ),
+            facingEntity: player,
+            easeOptions: {easeTime: 2, easeType: "in_out_sine"}
+        })
+    },110)
+}
+
+/**
+ * 
+ * @param {import("@minecraft/server").Vector3} v1 
+ * @param {import("@minecraft/server").Vector3} v2 
+ * @returns 
+ */
+export function vectorAdd(v1, v2) {
+    return {
+        x: v1.x + (v2.x ?? 0),
+        y: v1.y + (v2.y ?? 0),
+        z: v1.z + (v2.z ?? 0) 
+    }
+}
+
+function vectorReplace(v1, v2) {
+    return {
+        x: v2.x ?? v1.x,
+        y: v2.y ?? v1.y,
+        z: v2.z ?? v1.z
+    }
+}
+
+/**
+ * Multiplies a vector by another or by a number
+ * @param {import("@minecraft/server").Vector3} v1 
+ * @param {import("@minecraft/server").Vector3 | number} multiplier 
+ * @returns 
+ */
+function vectorMultiply(v1, multiplier) {
+    if(!v2) throw "v2 is undefined";
+    if(typeof v2 === "number") return {
+        x: v1.x * v2,
+        y: v1.y * v2,
+        z: v1.z * v2
+    }
+    return {
+        x: v1.x * (v2.x ?? 1),
+        y: v1.y * (v2.y ?? 1),
+        z: v1.z * (v2.z ?? 1)
+    }
+}
+
+function logReturn(obj) {
+    console.warn(JSON.stringify(obj, null, 2))
+    return obj
+}
