@@ -404,6 +404,7 @@ export function getSpreadLoc(location, distance, minDinstance=0) {
     return {x: x+location.x, y:location.y, z: z+location.z}
 }
 
+const cameraYheight = 200;
 /**
  * 
  * @param {Player} player 
@@ -418,61 +419,82 @@ export function spreadPlayerAnimation(player, location, distance, minDistance=0)
     })
 
     let firstLocation = player.location
-    if(player.dimension.getBlock(vectorAdd(firstLocation,{x:0,y:200,z:0})).isAir) {
-        firstLocation = vectorAdd(firstLocation,{y:200})
+    if(player.dimension.getBlock(vectorAdd(firstLocation,{x:0,y:cameraYheight,z:0})).isAir) {
+        firstLocation = vectorAdd(firstLocation,{y:cameraYheight})
     } else firstLocation = vectorReplace(firstLocation,{y:320})
 
-    player.camera.setCamera("minecraft:free", logReturn({
+    player.camera.setCamera("minecraft:free", {
         location: firstLocation,
-        rotation: {x: 90, y: player.getRotation().y},
-        easeOptions: {easeTime: 2, easeType: "in_out_sine"}
-    }))
+        rotation: {x: 90, y: 90},
+        easeOptions: {easeTime: 2, easeType: "InOutSine"}
+    })
 
     let secondLocation = getSpreadLoc(location, distance, minDistance);
+    secondLocation.y = firstLocation.y
 
-    player.dimension.runCommandAsync(`tickingarea add ${secondLocation.x-10} 0 ${secondLocation.z-10} ${secondLocation.x+10} 0 ${secondLocation.z+10} spreadPlayer_${player.name.replace(/\W/,"-")} true`)
+    player.dimension.runCommandAsync(`tickingarea add ${secondLocation.x-10} 0 ${secondLocation.z-10} ${secondLocation.x+10} 0 ${secondLocation.z+10} spreadPlayer_${player.name.replace(/\W/g,"-")} true`)
 
-    system.runTimeout(()=>{
-        player.camera.setCamera("minecraft:free", {
-            location: secondLocation,
-            rotation: {x:0,y:90},
-            easeOptions: {easeTime: 3.5, easeType: "in_out_sine"}
-        })
-    }, 40)
-    system.runTimeout(()=>{
+    let tries = 0;
+    function shootRayTry() {
         let raycast = player.dimension.getBlockFromRay(
             secondLocation,
             {x:0, y:-320, z:0},
-            {maxDistance:400,includeLiquidBlocks:true,includePassableBlocks:false}
+            {maxDistance:400,includeLiquidBlocks:true}
         ) ?? player.dimension.getBlockFromRay(
             vectorReplace(secondLocation, {y:320}),
             {x:0, y:-320, z:0},
-            {maxDistance:400,includeLiquidBlocks:true,includePassableBlocks:false}
+            {maxDistance:400,includeLiquidBlocks:true}
         )
-
+    
         if(!raycast) {
-            player.teleport(secondLocation)
-            player.runCommand(`spreadplayers ~ ~ 0 2 @s`)
-        } else {
-            player.teleport(vectorReplace(secondLocation,{y:raycast.block.y+1}))
+            if(tries<10) {
+                tries++
+                system.runTimeout(shootRayTry, 5)
+            } else {
+                player.teleport(secondLocation,{rotation:{x:0,y:0}})
+                player.runCommand(`spreadplayers ~ ~ 0 2 @s`)
+            }
+        } else {            
+            system.runTimeout(()=>{
+                player.dimension.runCommandAsync(`tickingarea remove spreadPlayer_${player.name.replace(/\W/g,"-")}`)
+        
+                player.teleport(vectorReplace(secondLocation,{y:raycast.block.y+1}),{rotation:{x:0,y:90}})
+
+                player.camera.setCamera("minecraft:free", {
+                    location: vectorAdd(
+                        player.getHeadLocation(),
+                        vectorReplace(
+                            vectorMultiply(player.getViewDirection(),-3),
+                            {y:0}
+                        )
+                    ),
+                    facingEntity: player,
+                    easeOptions: {easeTime: 2, easeType: "InOutSine"}
+                })
+            },70)
+
+            system.runTimeout(()=>{
+                player.camera.setCamera("minecraft:free", {
+                    location: vectorAdd(
+                        player.getHeadLocation(),
+                        vectorReplace(
+                            vectorMultiply(player.getViewDirection(),-0.3),
+                            {y:0}
+                        )
+                    ),
+                    easeOptions: {easeTime: 1, easeType: "InOutSine"}
+                })
+                system.runTimeout(()=>player.camera.clear(), 19)
+            },120)
         }
-    }, 75)
-
-    system.runTimeout(()=>{
-        player.dimension.runCommandAsync(`tickingarea remove spreadPlayer_${player.name.replace(/\W/,"-")}`)
-
         player.camera.setCamera("minecraft:free", {
-            location: vectorAdd(
-                player.getHeadLocation(),
-                vectorReplace(
-                    vectorMultiply(player.getViewDirection(),-3),
-                    {y:0}
-                )
-            ),
-            facingEntity: player,
-            easeOptions: {easeTime: 2, easeType: "in_out_sine"}
+            location: secondLocation,
+            rotation: {x:90,y:90},
+            easeOptions: {easeTime: 3.5, easeType: "InOutSine"}
         })
-    },110)
+    }
+
+    system.runTimeout(shootRayTry, 40);
 }
 
 /**
@@ -504,16 +526,16 @@ function vectorReplace(v1, v2) {
  * @returns 
  */
 function vectorMultiply(v1, multiplier) {
-    if(!v2) throw "v2 is undefined";
-    if(typeof v2 === "number") return {
-        x: v1.x * v2,
-        y: v1.y * v2,
-        z: v1.z * v2
+    if(!multiplier) throw "v2 is undefined";
+    if(typeof multiplier === "number") return {
+        x: v1.x * multiplier,
+        y: v1.y * multiplier,
+        z: v1.z * multiplier
     }
     return {
-        x: v1.x * (v2.x ?? 1),
-        y: v1.y * (v2.y ?? 1),
-        z: v1.z * (v2.z ?? 1)
+        x: v1.x * (multiplier.x ?? 1),
+        y: v1.y * (multiplier.y ?? 1),
+        z: v1.z * (multiplier.z ?? 1)
     }
 }
 

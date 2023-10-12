@@ -273,6 +273,7 @@ Syntax: !rank
  - itemInfo`)
                 break;
             case "setExtraLives": {
+                if(perms.includes("admin")) return noCmd(msg.sender);
                 if(!args[1]) return send(msg.sender, `§cMissing Arguments: Was soll der neue Wert sein?`)
                 
                 let newVal = parseInt(args[1])
@@ -285,9 +286,11 @@ Syntax: !rank
                 break;
             }
             case "test":
+                if(perms.includes("moderator")) return noCmd(msg.sender);
                 console.warn(world.getDynamicProperty("combatLoggedPlayers"))
                 break;
             case "getPlayerId":{
+                if(perms.includes("moderator")) return noCmd(msg.sender);
                 var pl = getPlayer(args[1])
                 if(!pl) return send(msg.sender,"§cNot a player")
 
@@ -295,12 +298,14 @@ Syntax: !rank
                 break;
             }
             case "itemInfo":{
+                if(perms.includes("moderator")) return noCmd(msg.sender);
                 let item = getItemInfo(msg.sender.getComponent("minecraft:inventory").container.getItem(msg.sender.selectedSlot), msg.sender)
                 send(msg.sender,`§7Item Info: §r§7\n - Name: ${item.nameTag ?? "None"}§r§7\n - Id: §8${item.typeId}§r§7\n - ${[...item.getLore(),"§7Tags: §8"+(item.getTags().join(", ") || "None")].join("§r§7\n - ")}`)
                 break;
             }
             case "spread":
-                spreadPlayerAnimation(msg.sender, {x:0,y:0,z:0}, parseInt(args[1]) || 100)
+                if(perms.includes("admin")) return noCmd(msg.sender);
+                spreadPlayerAnimation(msg.sender, {x:0,y:200,z:0}, parseInt(args[1]) || 100)
                 break;
             default:
                 noCmd(msg.sender)
