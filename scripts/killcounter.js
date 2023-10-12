@@ -62,7 +62,7 @@ export function eliminate(playerId, nameTag, suffix = "", ackKnowledgeDeath = tr
     }
     
     if(!player || !player.isValid()) {
-        world.setDynamicProperty("combatLoggedPlayers",world.getDynamicProperty("combatLoggedPlayers")+";"+playerId)
+        world.setDynamicProperty("combatLoggedPlayers",world.getDynamicProperty("combatLoggedPlayers")+playerId+";")
     } else {
         player.setDynamicProperty("extraLives",0)
         player.triggerEvent("max_health_0")
@@ -72,10 +72,10 @@ export function eliminate(playerId, nameTag, suffix = "", ackKnowledgeDeath = tr
     }
     if(ackKnowledgeDeath) {
         (player?.dimension ?? killer?.dimension ?? world.getDimension("overworld")).runCommandAsync("execute as @a at @s run playsound ambient.weather.thunder @s")
-        combatCooldown.delete(playerId)
 
         broad("§l§cDeath§r§8>> §c"+nameTag+" §7has been eliminated"+suffix)        
     }        
+    combatCooldown.delete(playerId)
     // player.dimension.spawnEntity("minecraft:lightning_bolt",player.location)
     // hurtEntity.dimension.runCommandAsync("execute as @a at @s run playsound ambient.weather.lightning.impact @s")
 }
