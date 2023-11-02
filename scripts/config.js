@@ -1,4 +1,4 @@
-export var config = {
+export const config = {
     cmdPrefix:"!",
     chatPrefix:"§l§bHighlander§r§8>>§r",
     generateOnLoadAttemp:true,
@@ -9,6 +9,8 @@ export var config = {
         "minecraft:end_portal",
         "minecraft:glowingobsidian"
     ],
-    strictMode: true,
-    forceStrictMode: false
+    strictMode: true, // strictMode settings are for the
+    forceStrictMode: false, // inv merging functionality
+    cameraYheight: 200,
+    altarLocation: {x:0, y:0, z:0}
 }

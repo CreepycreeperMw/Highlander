@@ -1,11 +1,11 @@
 import { EquipmentSlot, Player, system, world } from "@minecraft/server";
 import { ModalFormData } from "@minecraft/server-ui";
 import { revive, send } from "./functionLib";
+import { config } from "./config";
 
 let openForms = new Map()
 let triedRebirthTime = new Map()
 const loc = {x:0,y:0,z:0}
-const altarLoc = {x:0,y:0,z:0}
 /**
  * Shows an revive form to a player
  * @param {import("@minecraft/server").Player} player 
@@ -30,7 +30,7 @@ async function reviveForm(player) {
 world.beforeEvents.itemUseOn.subscribe(event=>{
     let {source: player, itemStack} = event
     if(!(player instanceof Player) || itemStack.typeId != "minecraft:totem_of_undying" || (openForms.has(player.id) && openForms.get(player.id))) return
-    // if(event.block.location != altarLoc) return
+    if(event.block.location != config.altarLocation) return
     event.cancel = true
 
     if(triedRebirthTime.has(player.id) && (new Date().getTime() - triedRebirthTime.get(player.id)) < 3000) return;
@@ -51,7 +51,7 @@ world.beforeEvents.itemUseOn.subscribe(event=>{
             if(xHp < 0) return send(player,"§cDu hast nicht genug Herzen um jemand zu wiederbeleben")
         	player.setDynamicProperty("extraLives",xHp)
         	player.triggerEvent("max_health_" + (xHp>10 ? 10 : xHp))
-            player.getComponent("minecraft:equipment_inventory").setEquipment(EquipmentSlot.mainhand)
+            player.getComponent("minecraft:equipment_inventory").setEquipment(EquipmentSlot.Mainhand)
             revive(target,player.location)
         }).catch()
     })

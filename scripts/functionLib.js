@@ -39,13 +39,13 @@ export function updateInv(player, viewingen, viewer, firstPage=true, reload=true
         } else {viewingen.runCommand(`replaceitem entity @s slot.inventory ${slot} air`)}
     }
     
-    let equip = player.getComponent("minecraft:equipment_inventory")
+    let equip = player.getComponent("minecraft:equippable")
 
-    viewingcon.setItem(20, getItemInfo(equip.getEquipment(EquipmentSlot.head),player,"§r§8[Equipment Slot Head]"))
-    viewingcon.setItem(21, getItemInfo(equip.getEquipment(EquipmentSlot.chest),player,"§r§8[Equipment Slot Chest]"))
-    viewingcon.setItem(22, getItemInfo(equip.getEquipment(EquipmentSlot.legs),player,"§r§8[Equipment Slot Legs]"))
-    viewingcon.setItem(23, getItemInfo(equip.getEquipment(EquipmentSlot.feet),player,"§r§8[Equipment Slot Feet]"))
-    viewingcon.setItem(24, getItemInfo(equip.getEquipment(EquipmentSlot.offhand),player,"§r§8[Offhand Slot]"))
+    viewingcon.setItem(20, getItemInfo(equip.getEquipment(EquipmentSlot.Head),player,"§r§8[Equipment Slot Head]"))
+    viewingcon.setItem(21, getItemInfo(equip.getEquipment(EquipmentSlot.Chest),player,"§r§8[Equipment Slot Chest]"))
+    viewingcon.setItem(22, getItemInfo(equip.getEquipment(EquipmentSlot.Legs),player,"§r§8[Equipment Slot Legs]"))
+    viewingcon.setItem(23, getItemInfo(equip.getEquipment(EquipmentSlot.Feet),player,"§r§8[Equipment Slot Feet]"))
+    viewingcon.setItem(24, getItemInfo(equip.getEquipment(EquipmentSlot.Offhand),player,"§r§8[Offhand Slot]"))
 
     viewingcon.setItem(18)
     var pointer = new ItemStack(ItemTypes.get("c:pageswitcher"),1)
@@ -404,7 +404,6 @@ export function getSpreadLoc(location, distance, minDinstance=0) {
     return {x: x+location.x, y:location.y, z: z+location.z}
 }
 
-const cameraYheight = 200;
 /**
  * 
  * @param {Player} player 
@@ -419,8 +418,8 @@ export function spreadPlayerAnimation(player, location, distance, minDistance=0)
     })
 
     let firstLocation = player.location
-    if(player.dimension.getBlock(vectorAdd(firstLocation,{x:0,y:cameraYheight,z:0})).isAir) {
-        firstLocation = vectorAdd(firstLocation,{y:cameraYheight})
+    if(player.dimension.getBlock(vectorAdd(firstLocation,{x:0,y:config.cameraYheight,z:0})).isAir) {
+        firstLocation = vectorAdd(firstLocation,{y:config.cameraYheight})
     } else firstLocation = vectorReplace(firstLocation,{y:320})
 
     player.camera.setCamera("minecraft:free", {

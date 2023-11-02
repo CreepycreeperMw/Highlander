@@ -16,16 +16,16 @@ var loadAttemp;
  */
 
 function loadAttemp() {
+    try{ov.runCommand(`tickingarea add 0 500 0 0 500 0 addon_save`)} catch{}
     setTimeout(()=>{
         var loaded = [...ov.getEntities()][0]
         if(!loaded) return loadAttemp();
         setTimeout(()=>{
             try{ov.runCommand(`scoreboard objectives add legit dummy`)} catch{}
             
-            ranksen = [...world.getDimension("overworld").getEntities({location: {x:0, y:500, z:0}, closest: 1, type: "c:mr_save", tags: ["ranks"]})][0];
+            try{ranksen = [...world.getDimension("overworld").getEntities({location: {x:0, y:500, z:0}, closest: 1, type: "c:mr_save", tags: ["ranks"]})][0]} catch {}
             if(!ranksen && config.generateOnLoadAttemp==false) return;
             if(!ranksen && loaded) {
-                try{ov.runCommand(`tickingarea add 0 500 0 0 500 0 addon_save`)} catch{}
                 try{
                     ranksen = world.getDimension("overworld").spawnEntity("c:mr_save",{x:0,y:0,z:0});
                     ranksen.addTag("ranks")
@@ -289,7 +289,7 @@ Syntax: !rank
                 if(!perms.includes("moderator")) return noCmd(msg.sender);
                 
                 let text = "§fThe following players have been flagged as combat logging:§7";
-                world.getDynamicProperty("combatLoggedPlayers").split(";").forEach(id=>text+="\n - "+id)
+                world.getDynamicProperty("combatLoggedPlayers").split(";").forEach(id=>text+="\n - "+(id||"None"))
                 send(msg.sender, text)
                 break;
             }
