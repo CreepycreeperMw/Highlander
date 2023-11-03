@@ -1,4 +1,4 @@
-import { world, system, ItemStack, ItemTypes, Player, DynamicPropertiesDefinition, EntityTypes } from "@minecraft/server"
+import { world, system, ItemStack, ItemTypes, Player } from "@minecraft/server"
 import { chatengine } from "./chatengine";
 import { config } from "./config";
 import { broad, getGamemode, send, setTimeout, updateInv } from "./functionLib";
@@ -71,9 +71,4 @@ world.beforeEvents.itemUseOn.subscribe(event=>{
             })
         }
     }
-})
-
-world.afterEvents.worldInitialize.subscribe(event=>{
-    event.propertyRegistry.registerWorldDynamicProperties(new DynamicPropertiesDefinition().defineString("combatLoggedPlayers",10000,""))
-    event.propertyRegistry.registerEntityTypeDynamicProperties(new DynamicPropertiesDefinition().defineNumber("extraLives",0), EntityTypes.get("minecraft:player"))
 })
