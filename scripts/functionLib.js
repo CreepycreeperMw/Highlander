@@ -387,10 +387,10 @@ export function getSpreadLoc(location, distance, minDinstance=0) {
 
 /**
  * Spreads the target player across the world to a random location and triggers a smooth animation
- * @param {Player} player 
- * @param {import("@minecraft/server").Vector3} location 
- * @param {number} distance 
- * @param {number} minDistance
+ * @param {Player} player Player to spread
+ * @param {import("@minecraft/server").Vector3} location Location of the center to spread the player from
+ * @param {number} distance Distance to spread away from the center
+ * @param {number} minDistance Minimum distance to spread away from the center
  */
 export function spreadPlayerAnimation(player, location, distance, minDistance=0) {
     player.camera.setCamera("minecraft:free", {

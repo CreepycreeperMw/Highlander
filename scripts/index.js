@@ -1,7 +1,7 @@
 import { world, system, ItemStack, ItemTypes, Player } from "@minecraft/server"
 import { chatengine } from "./chatengine";
 import { config } from "./config";
-import { getGamemode, send, updateInv } from "./functionLib";
+import { getGamemode, send, spreadPlayerAnimation, updateInv } from "./functionLib";
 import {} from "./killcounter";
 import {} from "./reviveMenu"
 var dm = world.getDimension("overworld");
@@ -75,3 +75,9 @@ world.beforeEvents.itemUseOn.subscribe(event=>{
 
 world.setDynamicProperty("combatLoggedPlayers",world.getDynamicProperty("combatLoggedPlayers") || "")
 world.setDynamicProperty("extraLives",world.getDynamicProperty("extraLives") || "")
+
+world.beforeEvents.playerInteractWithBlock.subscribe(event=>{
+    if(event.block.typeId = "minecraft:dark_oak_button" && event.block.location == config.teleportButtonLocation) {
+        spreadPlayerAnimation(event.player, config.spawnLocation, config.spreadDistance)
+    }
+})
