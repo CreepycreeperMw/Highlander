@@ -73,5 +73,5 @@ world.beforeEvents.itemUseOn.subscribe(event=>{
     }
 })
 
-world.setDynamicProperty("combatLoggedPlayers","")
-world.setDynamicProperty("extraLives","")
+world.setDynamicProperty("combatLoggedPlayers",world.getDynamicProperty("combatLoggedPlayers") || "")
+world.setDynamicProperty("extraLives",world.getDynamicProperty("extraLives") || "")
