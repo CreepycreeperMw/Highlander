@@ -1,7 +1,7 @@
 import { world, system, ItemStack, ItemTypes, Player } from "@minecraft/server"
 import { chatengine } from "./chatengine";
 import { config } from "./config";
-import { getGamemode, send, spreadPlayerAnimation, updateInv, vectorEquals } from "./functionLib";
+import { getGamemode, send, spreadPlayerAnimation, updateInv, vectorAdd, vectorEquals, vectorMinus, vectorMultiply, vectorReplace } from "./functionLib";
 import {} from "./killcounter";
 import {} from "./reviveMenu"
 var dm = world.getDimension("overworld");
@@ -49,6 +49,10 @@ system.runInterval(() => {
     try{dm.runCommand(`execute as @a[tag=team] at @s run tag @e[type=c:inv_view,r=2] add cinv_active`)} catch {}
     try{dm.runCommand(`execute as CreepycreeperMw at @s run tag @e[type=c:inv_view,r=2] add cinv_active`)} catch {}
     try{dm.runCommand(`event entity @e[tag=!cinv_active,type=c:inv_view] c:despawn`)} catch {}
+
+    dm.getEntities({location:config.kirchePosition, maxDistance: config.kirchenAuraRadius, families: ["monster"]}).forEach(entity=>{
+        entity.applyImpulse(vectorMinus(entity.location, config.kirchePosition))
+    })
 })
 
 chatengine()

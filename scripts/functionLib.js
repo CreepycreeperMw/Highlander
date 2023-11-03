@@ -416,6 +416,7 @@ export function spreadPlayerAnimation(player, location, distance, minDistance=0)
 
     let tries = 0;
     function shootRayTry() {
+        if(!player || !player.isValid()) return;
         let raycast = player.dimension.getBlockFromRay(
             secondLocation,
             {x:0, y:-320, z:0},
@@ -436,8 +437,9 @@ export function spreadPlayerAnimation(player, location, distance, minDistance=0)
             }
         } else {            
             system.runTimeout(()=>{
+                if(!player || !player.isValid()) return;
                 player.dimension.runCommandAsync(`tickingarea remove spreadPlayer_${player.name.replace(/\W/g,"-")}`)
-        
+                
                 player.teleport(vectorReplace(secondLocation,{y:raycast.block.y+1}),{rotation:{x:0,y:90}})
 
                 player.camera.setCamera("minecraft:free", {
@@ -452,8 +454,9 @@ export function spreadPlayerAnimation(player, location, distance, minDistance=0)
                     easeOptions: {easeTime: 2, easeType: "InOutSine"}
                 })
             },70)
-
+            
             system.runTimeout(()=>{
+                if(!player || !player.isValid()) return;
                 player.camera.setCamera("minecraft:free", {
                     location: vectorAdd(
                         player.getHeadLocation(),
@@ -521,4 +524,12 @@ export function vectorMultiply(v1, multiplier) {
 
 export function vectorEquals(v1, v2) {
     return v1.x == v2.x && v1.y == v2.y && v1.z == v2.z
+}
+
+export function vectorMinus(v1, v2) {
+    return {
+        x: v1.x - (v2.x ?? 0),
+        y: v1.y - (v2.y ?? 0),
+        z: v1.z - (v2.z ?? 0) 
+    }
 }

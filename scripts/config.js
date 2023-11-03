@@ -15,5 +15,7 @@ export const config = {
     altarLocation: {x:0, y:0, z:0},
     teleportButtonLocation: {x:0, y:0, z:0},
     spawnLocation: {x:0, y:200, z:0},
-    spreadDistance: 600
+    spreadDistance: 600,
+    kirchePosition: {x:0, y:0, z:0},
+    kirchenAuraRadius: 30,
 }

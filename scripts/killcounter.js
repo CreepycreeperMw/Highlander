@@ -71,7 +71,7 @@ export function eliminate(playerId, nameTag, suffix = "", ackKnowledgeDeath = tr
         deathpoint.set(playerId, {loc:player.location,rot:player.getRotation()})
     }
     if(ackKnowledgeDeath) {
-        (player?.dimension ?? killer?.dimension ?? world.getDimension("overworld")).runCommandAsync("execute as @a at @s run playsound ambient.weather.thunder @s ~ ~ ~ 1000000 0 100000")
+        (player?.dimension ?? killer?.dimension ?? world.getDimension("overworld")).runCommandAsync("execute as @a at @s run playsound ambient.weather.thunder @s ~ ~ ~")
 
         broad("§l§cDeath§r§8>> §c"+nameTag+" §7has been eliminated"+suffix)        
     }        
