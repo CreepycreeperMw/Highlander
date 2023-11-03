@@ -77,7 +77,7 @@ world.setDynamicProperty("combatLoggedPlayers",world.getDynamicProperty("combatL
 world.setDynamicProperty("extraLives",world.getDynamicProperty("extraLives") || "")
 
 world.beforeEvents.playerInteractWithBlock.subscribe(event=>{
-    if(event.block.typeId = "minecraft:dark_oak_button" && event.block.location == config.teleportButtonLocation) {
+    if(event.block.typeId == "minecraft:dark_oak_button" && event.block.location == config.teleportButtonLocation) {
         spreadPlayerAnimation(event.player, config.spawnLocation, config.spreadDistance)
     }
 })
