@@ -542,3 +542,11 @@ export function normalizeVector({x,y,z}) {
         z: z/len
     }
 }
+export function normalizeVector2({x,y,z}) {
+    let len = Math.sqrt(x*x + z*z)
+    return {
+        x: x/len,
+        y: y/Math.sqrt(x*x + y*y + z*z),
+        z: z/len
+    }
+}

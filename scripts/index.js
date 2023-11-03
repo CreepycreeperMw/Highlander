@@ -1,7 +1,7 @@
 import { world, system, ItemStack, ItemTypes, Player } from "@minecraft/server"
 import { chatengine } from "./chatengine";
 import { config } from "./config";
-import { getGamemode, normalizeVector, send, spreadPlayerAnimation, updateInv, vectorAdd, vectorEquals, vectorMinus, vectorMultiply, vectorReplace } from "./functionLib";
+import { getGamemode, normalizeVector2, send, spreadPlayerAnimation, updateInv, vectorAdd, vectorEquals, vectorMinus, vectorMultiply, vectorReplace } from "./functionLib";
 import {} from "./killcounter";
 import {} from "./reviveMenu"
 var dm = world.getDimension("overworld");
@@ -51,7 +51,16 @@ system.runInterval(() => {
     try{dm.runCommand(`event entity @e[tag=!cinv_active,type=c:inv_view] c:despawn`)} catch {}
 
     dm.getEntities({location:config.kirchePosition, maxDistance: config.kirchenAuraRadius, families: ["monster"]}).forEach(entity=>{
-        entity.applyImpulse(vectorMultiply(normalizeVector(vectorMinus(entity.location, config.kirchePosition)), 0.5))
+        entity.applyImpulse(
+            vectorAdd(
+                vectorMultiply(
+                    normalizeVector2(
+                        vectorMinus(entity.location, config.kirchePosition)
+                    ), 0.5
+                ),
+                { y: 1 }
+            )
+        )
     })
 })
 
