@@ -1,4 +1,4 @@
-import { world, Player, ItemStack, system, ChatSendBeforeEvent, EquipmentSlot} from "@minecraft/server";
+import { world, Player, ItemStack, system, ChatSendBeforeEvent } from "@minecraft/server";
 import { config } from "./config";
 import { getPlayer, rainbowart, send, getRanks, supString, serverMsg, setTimeout, getItemInfo, revive, updateInv, noCmd, spreadPlayerAnimation } from "./functionLib";
 

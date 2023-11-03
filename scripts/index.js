@@ -1,7 +1,7 @@
 import { world, system, ItemStack, ItemTypes, Player } from "@minecraft/server"
 import { chatengine } from "./chatengine";
 import { config } from "./config";
-import { broad, getGamemode, send, setTimeout, updateInv } from "./functionLib";
+import { getGamemode, send, updateInv } from "./functionLib";
 import {} from "./killcounter";
 import {} from "./reviveMenu"
 var dm = world.getDimension("overworld");

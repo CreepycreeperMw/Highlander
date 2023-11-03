@@ -1,4 +1,4 @@
-import { world, Player, system, EquipmentSlot, ItemStack, ItemLockMode, Entity, Vector, MolangVariableMap, ItemTypes} from "@minecraft/server";
+import { world, Player, system, EquipmentSlot, ItemStack, ItemLockMode, Entity, Vector, ItemTypes} from "@minecraft/server";
 import { config } from "./config";
 
 /**
