@@ -533,3 +533,12 @@ export function vectorMinus(v1, v2) {
         z: v1.z - (v2.z ?? 0) 
     }
 }
+
+export function normalizeVector({x,y,z}) {
+    let len = Math.sqrt(x*x + y*y + z*z)
+    return {
+        x: x/len,
+        y: y/len,
+        z: z/len
+    }
+}
