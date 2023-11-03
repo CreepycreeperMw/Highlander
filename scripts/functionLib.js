@@ -301,7 +301,7 @@ export function send(player, text, prefix) {
 }
 
 export function noCmd(player) {
-    return player.sendM({"rawtext":[{"text":config.chatPrefix + " §cIch kann diesen Command nicht finden X_X"}]})
+    return player.sendMessage({"rawtext":[{"text":config.chatPrefix + " §cIch kann diesen Command nicht finden X_X"}]})
 }
 
 export function serverMsg(selector, text) {
