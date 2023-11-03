@@ -491,7 +491,7 @@ export function vectorAdd(v1, v2) {
     }
 }
 
-function vectorReplace(v1, v2) {
+export function vectorReplace(v1, v2) {
     return {
         x: v2.x ?? v1.x,
         y: v2.y ?? v1.y,
@@ -505,7 +505,7 @@ function vectorReplace(v1, v2) {
  * @param {import("@minecraft/server").Vector3 | number} multiplier 
  * @returns 
  */
-function vectorMultiply(v1, multiplier) {
+export function vectorMultiply(v1, multiplier) {
     if(!multiplier) throw "v2 is undefined";
     if(typeof multiplier === "number") return {
         x: v1.x * multiplier,
@@ -517,4 +517,8 @@ function vectorMultiply(v1, multiplier) {
         y: v1.y * (multiplier.y ?? 1),
         z: v1.z * (multiplier.z ?? 1)
     }
+}
+
+export function vectorEquals(v1, v2) {
+    return v1.x == v2.x && v1.y == v2.y && v1.z == v2.z
 }
