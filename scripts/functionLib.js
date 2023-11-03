@@ -200,25 +200,6 @@ export function rainbowart(text) {
     return rbtext.join("")
 }
 
-// export class Timeout {
-//     /**
-//      * 
-//      * @param {()=>void} callback function to call after specified delay
-//      * @param {number} delay delay after which the function is called
-//      */
-//     constructor(callback, delay, loop = false) {
-//         this.progress = 0;
-
-//         let evs = system.runInterval(evt=>{
-//             this.progress+=evt.deltaTime
-//             if(this.progress>=delay) {
-//                 callback()
-//                 if(loop==false) system.clearRun(evs)
-//                 else this.progress -= delay;
-//             }
-//         })
-//     }
-// }
 globalThis.stackIndex=0;
 globalThis.stack=[];
 /**
@@ -405,7 +386,7 @@ export function getSpreadLoc(location, distance, minDinstance=0) {
 }
 
 /**
- * 
+ * Spreads the target player across the world to a random location and triggers a smooth animation
  * @param {Player} player 
  * @param {import("@minecraft/server").Vector3} location 
  * @param {number} distance 
@@ -497,7 +478,7 @@ export function spreadPlayerAnimation(player, location, distance, minDistance=0)
 }
 
 /**
- * 
+ * Adds two vectors together
  * @param {import("@minecraft/server").Vector3} v1 
  * @param {import("@minecraft/server").Vector3} v2 
  * @returns 
@@ -536,9 +517,4 @@ function vectorMultiply(v1, multiplier) {
         y: v1.y * (multiplier.y ?? 1),
         z: v1.z * (multiplier.z ?? 1)
     }
-}
-
-function logReturn(obj) {
-    console.warn(JSON.stringify(obj, null, 2))
-    return obj
 }
