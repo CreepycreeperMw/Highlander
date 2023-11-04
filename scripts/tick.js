@@ -63,5 +63,8 @@ system.runInterval(() => {
         )
     })
 
-    dm.runCommandAsync("execute as @e[type=c:entity,tag=reviveParticle] at @s run particle something ^ ^ ^0.4")
+    dm.runCommandAsync("execute as @e[type=c:entity,tag=reviveParticle] at @s positioned ~ ~1.4 ~ run particle minecraft:endrod ^ ^ ^0.4")
+    dm.runCommandAsync("execute as @e[type=c:entity,tag=reviveParticle] at @s positioned ~ ~1.4 ~ run particle minecraft:basic_portal_particle ^ ^ ^-0.4")
+    dm.runCommandAsync("execute as @e[type=c:entity,tag=reviveParticle] at @s positioned ~ ~1.4 ~ run particle minecraft:basic_portal_particle ^ ^ ^-0.4")
+    dm.runCommandAsync("execute as @e[type=c:entity,tag=reviveParticle] at @s run tp @s ~ ~ ~ ~5 ~")
 })

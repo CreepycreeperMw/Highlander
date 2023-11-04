@@ -38,7 +38,8 @@ function loadAttemp() {
             }
             ranksen.runCommand(`tp @s 0 500 0`)
             ranks=JSON.parse(ranksen.nameTag);
-            try{ov.runCommandAsync(`scoreboard objectives add money dummy`)} catch{}
+            ov.runCommandAsync("gamerule showdeathmessages false")
+            ov.runCommandAsync("gamerule sendcommandfeedback false")
         },5000)
     }, 1000)
 }
@@ -107,6 +108,8 @@ function chatCallback(msg, perms) {
                     ranksen.addTag("ranks")
                 } catch{}
                 ranksen.runCommand(`tp @s 0 500 0`)
+                ov.runCommandAsync("gamerule showdeathmessages false")
+                ov.runCommandAsync("gamerule sendcommandfeedback false")
                 break;
             case "sudo":
                 if(!perms.includes("sudo")) return send(msg.sender, `§cIch kann diesen Command nicht finden X_X`)

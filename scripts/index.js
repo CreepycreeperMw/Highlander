@@ -33,7 +33,7 @@ world.setDynamicProperty("combatLoggedPlayers",world.getDynamicProperty("combatL
 world.setDynamicProperty("extraLives",world.getDynamicProperty("extraLives") || "")
 
 world.beforeEvents.playerInteractWithBlock.subscribe(event=>{
-    if(event.block.typeId == "minecraft:dark_oak_button" && vectorEquals(event.block.location,config.teleportButtonLocation)) {
+    if(event.block.typeId == "minecraft:dark_oak_button" && event.block.dimension.id == config.dimension && vectorEquals(event.block.location,config.teleportButtonLocation)) {
         system.run(()=>spreadPlayerAnimation(event.player, config.spawnLocation, config.spreadDistance))
     }
 })

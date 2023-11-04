@@ -1,6 +1,6 @@
 import { EquipmentSlot, Player, system, world } from "@minecraft/server";
 import { ModalFormData } from "@minecraft/server-ui";
-import { revive, send, vectorEquals } from "./functionLib";
+import { revive, send, vectorAdd, vectorEquals } from "./functionLib";
 import { config } from "./config";
 
 let openForms = new Map()
@@ -52,8 +52,22 @@ world.beforeEvents.itemUseOn.subscribe(event=>{
         	player.setDynamicProperty("extraLives",xHp)
         	player.triggerEvent("max_health_" + (xHp>10 ? 10 : xHp))
             player.getComponent("minecraft:equippable").setEquipment(EquipmentSlot.Mainhand)
+
+            let plPartic = player.dimension.spawnEntity("c:entity",player.location)
+            let altarPatic = world.getDimension(config.dimension).spawnEntity("c:entity",vectorAdd(config.altarLocation,{x:0.5,y:-0.5,z:0.5}))
+            plPartic.addTag("reviveParticle")
+            altarPatic.addTag("reviveParticle")
             
-            revive(target,player.location)
+            system.runTimeout(()=>{
+                revive(target,vectorAdd(config.altarLocation,{x:0.5,y:1,z:0.5}))
+                plPartic.remove()
+                altarPatic.remove()
+                player.dimension.spawnParticle("minecraft:egg_destroy_emitter",player.location)
+                player.dimension.spawnParticle("minecraft:egg_destroy_emitter",vectorAdd(player.location,{y:1}))
+
+                target.dimension.spawnParticle("minecraft:egg_destroy_emitter",target.location)
+                target.dimension.spawnParticle("minecraft:egg_destroy_emitter",vectorAdd(target.location,{y:1}))
+            },60)
         }).catch()
     })
 })

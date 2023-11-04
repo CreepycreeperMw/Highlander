@@ -12,10 +12,11 @@ export const config = {
     strictMode: true, // strictMode settings are for the
     forceStrictMode: false, // inv merging functionality
     cameraYheight: 200,
-    altarLocation: {x:0, y:0, z:0},
+    altarLocation: {x:-4, y:-60, z:16},
     teleportButtonLocation: {x:0, y:0, z:0},
     spawnLocation: {x:0, y:200, z:0},
     spreadDistance: 600,
-    kirchePosition: {x:0, y:0, z:0},
+    kirchePosition: {x:-1, y:-60, z:8},
     kirchenAuraRadius: 30,
+    dimension: "overworld"
 }
