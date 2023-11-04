@@ -84,6 +84,24 @@
                     "value": 40,
                     "max": 40
                 }
+            },
+            "invurnable": {
+                "minecraft:spell_effects": {
+                    "add_effects": [
+                        {
+                            "effect": "resistance",
+                            "visible": false,
+                            "duration": 1,
+                            "amplifier": 255
+                        }
+                    ]
+                },
+                "minecraft:damage_sensor": {
+                    "triggers": {
+                        "cause": "all",
+                        "deals_damage": false
+                    }
+                }
             }
 		},
         "components": {
@@ -238,6 +256,16 @@
                 },
                 "add":{
                     "component_groups": ["max_health_10"]
+                }
+            },
+            "invurnable":{
+                "add":{
+                    "component_groups": ["invurnable"]
+                }
+            },
+            "vurnable":{
+                "remove":{
+                    "component_groups": ["invurnable"]
                 }
             }
         }

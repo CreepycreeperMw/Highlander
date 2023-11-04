@@ -393,6 +393,7 @@ export function getSpreadLoc(location, distance, minDinstance=0) {
  * @param {number} minDistance Minimum distance to spread away from the center
  */
 export function spreadPlayerAnimation(player, location, distance, minDistance=0) {
+    player.triggerEvent("invurnable")
     player.camera.setCamera("minecraft:free", {
         location: vectorAdd(player.location,{x:0,y:4,z:0}),
         rotation: {x:0,y:90}
@@ -467,6 +468,7 @@ export function spreadPlayerAnimation(player, location, distance, minDistance=0)
                     ),
                     easeOptions: {easeTime: 1, easeType: "InOutSine"}
                 })
+                player.triggerEvent("vurnable")
                 system.runTimeout(()=>player.camera.clear(), 19)
             },120)
         }

@@ -51,7 +51,8 @@ world.beforeEvents.itemUseOn.subscribe(event=>{
             if(xHp < 0) return send(player,"§cDu hast nicht genug Herzen um jemand zu wiederbeleben")
         	player.setDynamicProperty("extraLives",xHp)
         	player.triggerEvent("max_health_" + (xHp>10 ? 10 : xHp))
-            player.getComponent("minecraft:equipment_inventory").setEquipment(EquipmentSlot.Mainhand)
+            player.getComponent("minecraft:equippable").setEquipment(EquipmentSlot.Mainhand)
+            
             revive(target,player.location)
         }).catch()
     })
