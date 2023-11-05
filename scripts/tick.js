@@ -65,7 +65,7 @@ system.runInterval(() => {
         )
     })
 
-    dm.getEntities({location:config.kirchePosition, maxDistance: config.kirchenAuraRadius, type:"minecraft:end_crystal"}).forEach(entity=>{
+    dm.getEntities({location:config.kirchePosition, maxDistance: config.kirchenAuraRadius, type:"minecraft:ender_crystal"}).forEach(entity=>{
         entity.remove()
     })
 
