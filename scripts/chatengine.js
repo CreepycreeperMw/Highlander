@@ -314,6 +314,8 @@ Syntax: !rank
                 if(!perms.includes("admin")) return noCmd(msg.sender);
                 spreadPlayerAnimation(msg.sender, {x:0,y:200,z:0}, parseInt(args[1]) || 100)
                 break;
+            case "account":
+                break;
             default:
                 noCmd(msg.sender)
                 break;
@@ -360,7 +362,7 @@ Syntax: !rank
 world.beforeEvents.chatSend.subscribe(msg=> {
     msg.sendToTargets=true
     msg.setTargets([])
-    if(msg.message.startsWith(prefix)) msg.cancel = true;
+    if(msg.message.startsWith(prefix) && !msg.message.toLowerCase().startsWith("!account")) msg.cancel = true;
 
     let perms = [];
     var tags = msg.sender.getTags()
