@@ -552,3 +552,7 @@ export function normalizeVector2({x,y,z}) {
         z: z/len
     }
 }
+
+export function vectorDistance(v1,v2) {
+    return Math.sqrt((v1.x-v2.x)**2 + (v1.y-v2.y)**2 + (v1.z-v2.z)**2)
+}

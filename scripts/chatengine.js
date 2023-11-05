@@ -316,6 +316,9 @@ Syntax: !rank
                 break;
             case "account":
                 break;
+            case "getDynamicProperties":
+                send(msg.sender, " - "+world.getDynamicPropertyIds().join("\n - "))
+                break;
             default:
                 noCmd(msg.sender)
                 break;

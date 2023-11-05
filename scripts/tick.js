@@ -47,7 +47,9 @@ system.runInterval(() => {
     try{dm.runCommand(`execute as CreepycreeperMw at @s run tag @e[type=c:inv_view,r=2] add cinv_active`)} catch {}
     try{dm.runCommand(`event entity @e[tag=!cinv_active,type=c:inv_view] c:despawn`)} catch {}
 
-    dm.getEntities({location:config.kirchePosition, maxDistance: config.kirchenAuraRadius, families: ["monster"]}).forEach(entity=>{
+    [...dm.getEntities({location:config.kirchePosition, maxDistance: config.kirchenAuraRadius, families: ["monster"]})
+    ,...dm.getEntities({location:config.kirchePosition, maxDistance: config.kirchenAuraRadius, families: ["tnt"]})
+    ,...dm.getEntities({location:config.kirchePosition, maxDistance: config.kirchenAuraRadius, families: ["minecart"]})].forEach(entity=>{
         if(entity.typeId=="minecraft:player" || !entity.isValid()) return;
         entity.dimension.spawnParticle("minecraft:knockback_roar_particle",entity.location)
         entity.clearVelocity()
@@ -61,6 +63,10 @@ system.runInterval(() => {
                 { y: 0.5 }
             )
         )
+    })
+
+    dm.getEntities({location:config.kirchePosition, maxDistance: config.kirchenAuraRadius, type:"minecraft:end_crystal"}).forEach(entity=>{
+        entity.remove()
     })
 
     dm.runCommandAsync("execute as @e[type=c:entity,tag=reviveParticle] at @s positioned ~ ~1.4 ~ run particle minecraft:endrod ^ ^ ^0.4")

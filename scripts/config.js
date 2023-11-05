@@ -18,5 +18,15 @@ export const config = {
     spreadDistance: 600,
     kirchePosition: {x:-1, y:-60, z:8},
     kirchenAuraRadius: 30,
-    dimension: "overworld"
+    dimension: "overworld",
+    forbiddenItemsInChurch: [
+        "minecraft:bow",
+        "minecraft:trident",
+        "minecraft:crossbow",
+        "minecraft:egg",
+        "minecraft:goat_horn",
+        "minecraft:fishing_rod",
+        "minecraft:splash_potion",
+        "minecraft:lingering_potion"
+    ]
 }
