@@ -67,6 +67,26 @@ system.runInterval(() => {
 
     dm.getEntities({location:config.kirchePosition, maxDistance: config.kirchenAuraRadius, type:"minecraft:ender_crystal"}).forEach(entity=>{
         entity.remove()
+    });
+
+    // Get all players that were previously in church but are no longer
+    [
+        ...dm.getPlayers({location: config.kirchePosition, minDistance: config.kirchenAuraRadius, tags: ["church"]}),
+        ...world.getDimension("nether").getPlayers({tags: ["church"]}),
+        ...world.getDimension("the_end").getPlayers({tags: ["church"]})
+    ].forEach(player=>{
+        player.removeTag("church")
+        player.triggerEvent("vurnable")
+        player.runCommandAsync("gamemode s @s[m=a]")
+    })
+
+    // Get all players that are in church and make them invurnable
+    dm.getPlayers({location: config.kirchePosition, maxDistance: config.kirchenAuraRadius}).forEach(player=>{
+        if(!player.hasTag("church")) {
+            player.addTag("church")
+            player.triggerEvent("invurnable")
+            player.runCommandAsync("gamemode a @s[m=s]")
+        }
     })
 
     dm.runCommandAsync("execute as @e[type=c:entity,tag=reviveParticle] at @s positioned ~ ~1.4 ~ run particle minecraft:endrod ^ ^ ^0.4")
