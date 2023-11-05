@@ -48,7 +48,7 @@ system.runInterval(() => {
     try{dm.runCommand(`event entity @e[tag=!cinv_active,type=c:inv_view] c:despawn`)} catch {}
 
     dm.getEntities({location:config.kirchePosition, maxDistance: config.kirchenAuraRadius, families: ["monster"]}).forEach(entity=>{
-        if(entity.typeId=="minecraft:player") return;
+        if(entity.typeId=="minecraft:player" || !entity.isValid()) return;
         entity.dimension.spawnParticle("minecraft:knockback_roar_particle",entity.location)
         entity.clearVelocity()
         entity.applyImpulse(
