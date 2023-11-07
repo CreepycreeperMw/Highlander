@@ -28,7 +28,11 @@ export const config = {
         "minecraft:goat_horn",
         "minecraft:fishing_rod",
         "minecraft:splash_potion",
-        "minecraft:lingering_potion"
+        "minecraft:lingering_potion",
+        "minecraft:ender_pearl",
+        "minecraft:chorus_fruit",
+        "minecraft:name_tag",
+        "minecraft:firework_rocket"
     ],
     debugMode: false, // This is for testing the addon and remove any admin checks.
     removeProjectilesInChurch: true
