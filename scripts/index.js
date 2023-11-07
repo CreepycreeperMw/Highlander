@@ -82,3 +82,9 @@ world.beforeEvents.itemUse.subscribe(event=>{
         send(event.source, "§7You can't use this item right now!")
     }
 })
+
+world.beforeEvents.playerInteractWithBlock.subscribe(event=>{
+    if(!event.player.isOp() && vectorDistance(event.block.location, config.churchPos) < config.churchAuraRadius) {
+        event.cancel = true;
+    }
+})
