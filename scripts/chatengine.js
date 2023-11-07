@@ -315,6 +315,7 @@ Syntax: !rank
                 spreadPlayerAnimation(msg.sender, {x:0,y:200,z:0}, parseInt(args[1]) || 100)
                 break;
             case "account":
+            case "Account":
                 break;
             case "getDynamicProperties":
                 send(msg.sender, " - "+world.getDynamicPropertyIds().join("\n - "))
