@@ -12,14 +12,14 @@ export const config = {
     strictMode: true, // strictMode settings are for the
     forceStrictMode: false, // inv merging functionality
     cameraYheight: 200,
-    altarLocation: {x:-4, y:-60, z:16},
-    teleportButtonLocation: {x:0, y:0, z:0},
-    spawnLocation: {x:0, y:200, z:0},
+    altarLocation: {x:-1028, y:97, z:-1320},
+    teleportButtonLocation: {x:-1028, y:109, z:-1307},
+    spawnLocation: {x:-1021, y:108, z:-1322},
     spreadDistance: 600,
-    churchPos: {x:-1, y:-60, z:8},
-    churchAuraRadius: 30,
+    churchPos: {x:-1028, y:108, z:-1314},
+    churchAuraRadius: 50,
     innerChurchRadius: 10,
-    dimension: "overworld",
+    dimension: "minecraft:overworld",
     forbiddenItemsInChurch: [
         "minecraft:bow",
         "minecraft:trident",
@@ -29,7 +29,5 @@ export const config = {
         "minecraft:fishing_rod",
         "minecraft:splash_potion",
         "minecraft:lingering_potion"
-    ],
-    debugMode: false, // This is for testing the addon and remove any admin checks.
-    removeProjectilesInChurch: true
+    ]
 }
