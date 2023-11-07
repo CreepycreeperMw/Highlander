@@ -29,5 +29,7 @@ export const config = {
         "minecraft:fishing_rod",
         "minecraft:splash_potion",
         "minecraft:lingering_potion"
-    ]
+    ],
+    debugMode: false, // This is for testing the addon and remove any admin checks.
+    removeProjectilesInChurch: true
 }
