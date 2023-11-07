@@ -16,8 +16,9 @@ export const config = {
     teleportButtonLocation: {x:0, y:0, z:0},
     spawnLocation: {x:0, y:200, z:0},
     spreadDistance: 600,
-    kirchePosition: {x:-1, y:-60, z:8},
-    kirchenAuraRadius: 30,
+    churchPos: {x:-1, y:-60, z:8},
+    churchAuraRadius: 30,
+    innerChurchRadius: 10,
     dimension: "overworld",
     forbiddenItemsInChurch: [
         "minecraft:bow",
@@ -28,5 +29,7 @@ export const config = {
         "minecraft:fishing_rod",
         "minecraft:splash_potion",
         "minecraft:lingering_potion"
-    ]
+    ],
+    debugMode: false, // This is for testing the addon and remove any admin checks.
+    removeProjectilesInChurch: true
 }

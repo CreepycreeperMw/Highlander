@@ -47,9 +47,11 @@ system.runInterval(() => {
     try{dm.runCommand(`execute as CreepycreeperMw at @s run tag @e[type=c:inv_view,r=2] add cinv_active`)} catch {}
     try{dm.runCommand(`event entity @e[tag=!cinv_active,type=c:inv_view] c:despawn`)} catch {}
 
-    [...dm.getEntities({location:config.kirchePosition, maxDistance: config.kirchenAuraRadius, families: ["monster"]})
-    ,...dm.getEntities({location:config.kirchePosition, maxDistance: config.kirchenAuraRadius, families: ["tnt"]})
-    ,...dm.getEntities({location:config.kirchePosition, maxDistance: config.kirchenAuraRadius, families: ["minecart"]})].forEach(entity=>{
+    [...dm.getEntities({location:config.churchPos, maxDistance: config.churchAuraRadius, families: ["monster"]})
+    ,...dm.getEntities({location:config.churchPos, maxDistance: config.churchAuraRadius, families: ["tnt"]})
+    ,...dm.getEntities({location:config.churchPos, maxDistance: config.churchAuraRadius, type: "minecraft:arrow", minDistance: config.innerChurchRadius})
+    ,...dm.getEntities({location:config.churchPos, maxDistance: config.churchAuraRadius, type: "minecraft:snowball", minDistance: config.innerChurchRadius})
+    ,...dm.getEntities({location:config.churchPos, maxDistance: config.churchAuraRadius, families: ["minecart"]})].forEach(entity=>{
         if(entity.typeId=="minecraft:player" || !entity.isValid()) return;
         entity.dimension.spawnParticle("minecraft:knockback_roar_particle",entity.location)
         entity.clearVelocity()
@@ -57,21 +59,27 @@ system.runInterval(() => {
             vectorAdd(
                 vectorMultiply(
                     normalizeVector2(
-                        vectorMinus(entity.location, config.kirchePosition)
+                        vectorMinus(entity.location, config.churchPos)
                     ), 0.5
                 ),
                 { y: 0.5 }
             )
         )
-    })
+    });
 
-    dm.getEntities({location:config.kirchePosition, maxDistance: config.kirchenAuraRadius, type:"minecraft:ender_crystal"}).forEach(entity=>{
+    [
+        ...dm.getEntities({location:config.churchPos, maxDistance: config.churchAuraRadius, type:"minecraft:ender_crystal"}),
+        // ...dm.getEntities({location:config.churchPos, maxDistance: config.innerChurchRadius, type: "minecraft:snowball"}),
+        ...(config.removeProjectilesInChurch?[...dm.getEntities({location:config.churchPos, maxDistance: config.innerChurchRadius, type: "minecraft:arrow"}),
+        ...dm.getEntities({location:config.churchPos, maxDistance: config.innerChurchRadius, type: "minecraft:trident"})]:[]),
+        ...dm.getEntities({location:config.churchPos, maxDistance: config.innerChurchRadius, families: ["monster"]})
+    ].forEach(entity=>{
         entity.remove()
     });
 
     // Get all players that were previously in church but are no longer
     [
-        ...dm.getPlayers({location: config.kirchePosition, minDistance: config.kirchenAuraRadius, tags: ["church"]}),
+        ...dm.getPlayers({location: config.churchPos, minDistance: config.churchAuraRadius, tags: ["church"]}),
         ...world.getDimension("nether").getPlayers({tags: ["church"]}),
         ...world.getDimension("the_end").getPlayers({tags: ["church"]})
     ].forEach(player=>{
@@ -81,7 +89,7 @@ system.runInterval(() => {
     })
 
     // Get all players that are in church and make them invurnable
-    dm.getPlayers({location: config.kirchePosition, maxDistance: config.kirchenAuraRadius}).forEach(player=>{
+    dm.getPlayers({location: config.churchPos, maxDistance: config.churchAuraRadius}).forEach(player=>{
         if(!player.hasTag("church")) {
             player.addTag("church")
             player.triggerEvent("invurnable")

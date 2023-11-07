@@ -1,11 +1,15 @@
 import { world, system, Player } from "@minecraft/server"
 import { chatengine } from "./chatengine";
 import { config } from "./config";
-import { getGamemode, send, spreadPlayerAnimation, vectorDistance, vectorEquals, vectorMinus } from "./functionLib";
+import { getGamemode, send, spreadPlayerAnimation, vectorDistance, vectorEquals } from "./functionLib";
 import {} from "./tick";
 import {} from "./killcounter";
 import {} from "./reviveMenu";
 var dm = world.getDimension("overworld");
+
+if(config.debugMode) {
+    Player.prototype.isOp = function() {return false}
+}
 
 chatengine()
 
@@ -49,31 +53,31 @@ world.beforeEvents.playerInteractWithBlock.subscribe(event=>{
 
 world.beforeEvents.explosion.subscribe(event=>{
     if(
-        (event.source && vectorDistance(event.source.location, config.kirchePosition)<=(config.kirchenAuraRadius+10)) ||
+        (event.source && vectorDistance(event.source.location, config.churchPos)<=(config.churchAuraRadius+10)) ||
         (!event.source && 
             event.getImpactedBlocks()[0] &&
-            vectorDistance(event.getImpactedBlocks()[0].location, config.kirchePosition)<=(config.kirchenAuraRadius+10)
+            vectorDistance(event.getImpactedBlocks()[0].location, config.churchPos)<=(config.churchAuraRadius+10)
         )
     ) {
         let impactedBlocks = []
         event.getImpactedBlocks().forEach(block=>{
-            if(vectorDistance(block.location, config.kirchePosition) > config.kirchenAuraRadius) impactedBlocks.push(block)
+            if(vectorDistance(block.location, config.churchPos) > config.churchAuraRadius) impactedBlocks.push(block)
         })
         event.setImpactedBlocks(impactedBlocks)
     }
 })
 
 world.beforeEvents.pistonActivate.subscribe(event=>{
-    if(vectorDistance(event.block.location, config.kirchePosition) > (config.kirchenAuraRadius+10)) return;
+    if(vectorDistance(event.block.location, config.churchPos) > (config.churchAuraRadius+10)) return;
     event.piston.getAttachedBlocks().forEach(block=>{
-        if(vectorDistance(block.location, config.kirchePosition) <= config.kirchenAuraRadius) event.cancel = true;
+        if(vectorDistance(block.location, config.churchPos) <= config.churchAuraRadius) event.cancel = true;
     })
 })
 
 world.beforeEvents.itemUse.subscribe(event=>{
     if(!event.source?.isOp()
     && config.forbiddenItemsInChurch.includes(event.itemStack.typeId)
-    && vectorDistance(event.source.location,config.kirchePosition) < config.kirchenAuraRadius) {
+    && vectorDistance(event.source.location,config.churchPos) < config.churchAuraRadius) {
         event.cancel = true;
         send(event.source, "§7You can't use this item right now!")
     }
