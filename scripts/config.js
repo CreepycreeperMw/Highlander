@@ -12,13 +12,13 @@ export const config = {
     strictMode: true, // strictMode settings are for the
     forceStrictMode: false, // inv merging functionality
     cameraYheight: 200,
-    altarLocation: {x:-4, y:-60, z:16},
-    teleportButtonLocation: {x:0, y:0, z:0},
-    spawnLocation: {x:0, y:200, z:0},
+    altarLocation: {x:-1028, y:97, z:-1320},
+    teleportButtonLocation: {x:-1028, y:109, z:-1307},
+    spawnLocation: {x:-1021, y:108, z:-1322},
     spreadDistance: 600,
-    kirchePosition: {x:-1, y:-60, z:8},
-    kirchenAuraRadius: 30,
-    dimension: "overworld",
+    kirchePosition: {x:-1028, y:108, z:-1314},
+    kirchenAuraRadius: 50,
+    dimension: "minecraft:overworld",
     forbiddenItemsInChurch: [
         "minecraft:bow",
         "minecraft:trident",
@@ -27,6 +27,10 @@ export const config = {
         "minecraft:goat_horn",
         "minecraft:fishing_rod",
         "minecraft:splash_potion",
-        "minecraft:lingering_potion"
+        "minecraft:lingering_potion",
+        "minecraft:ender_pearl",
+        "minecraft:chorus_fruit",
+        "minecraft:name_tag",
+        "minecraft:firework_rocket"
     ]
 }
