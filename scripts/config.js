@@ -18,7 +18,7 @@ export const config = {
     spreadDistance: 600,
     churchPos: {x:-1028, y:108, z:-1314},
     churchAuraRadius: 50,
-    innerChurchRadius: 10,
+    innerChurchRadius: 20,
     dimension: "minecraft:overworld",
     forbiddenItemsInChurch: [
         "minecraft:bow",
