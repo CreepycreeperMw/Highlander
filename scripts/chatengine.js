@@ -325,7 +325,7 @@ Syntax: !rank
                 if(!perms.includes("admin")) return noCmd(msg.sender);
                 
                 send(msg.sender, "Block Info:\n - §r§7"+getBlockInfo(
-                    msg.sender.getBlockFromViewDirection({includeLiquidBlocks:true, includePassableBlocks: true, maxDistance: 400}).block
+                    msg.sender.getBlockFromViewDirection({includeLiquidBlocks:true, includePassableBlocks: true, maxDistance: 400})?.block
                 ).join("\n§r - §r§7"))
                 break;
             default:
