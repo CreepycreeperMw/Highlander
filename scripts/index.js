@@ -88,3 +88,10 @@ world.beforeEvents.playerInteractWithBlock.subscribe(event=>{
         event.cancel = true;
     }
 })
+
+world.afterEvents.entitySpawn.subscribe(event=>{
+    if(event.cause === "Spawned" && vectorDistance(event.entity.location, config.churchPos) < config.churchAuraRadius) {
+        if(!config.preventedMobsInChurchAura.includes(event.entity.typeId)) return;
+        event.entity.remove()
+    }
+})

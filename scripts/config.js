@@ -35,5 +35,11 @@ export const config = {
         "minecraft:firework_rocket"
     ],
     debugMode: false, // This is for testing the addon and remove any admin checks.
-    removeProjectilesInChurch: true
+    removeProjectilesInChurch: true,
+    preventedMobsInChurchAura: [
+        "minecraft:zombie",
+        "minecraft:spider",
+        "minecraft:creeper",
+        "minecraft:skeleton"
+    ]
 }
