@@ -84,7 +84,7 @@ world.beforeEvents.itemUse.subscribe(event=>{
 })
 
 world.beforeEvents.playerInteractWithBlock.subscribe(event=>{
-    if(!event.player.isOp() && vectorDistance(event.block.location, config.churchPos) < config.churchAuraRadius) {
+    if(!event.player.isOp() && vectorDistance(event.block.location, config.churchPos) < config.churchAuraRadius && !event.block.getItemStack().hasTag("minecraft:door")) {
         event.cancel = true;
     }
 })

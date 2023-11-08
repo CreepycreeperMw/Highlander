@@ -1,6 +1,6 @@
 import { world, Player, ItemStack, system, ChatSendBeforeEvent } from "@minecraft/server";
 import { config } from "./config";
-import { getPlayer, rainbowart, send, getRanks, supString, serverMsg, setTimeout, getItemInfo, revive, updateInv, noCmd, spreadPlayerAnimation } from "./functionLib";
+import { getPlayer, rainbowart, send, getRanks, supString, serverMsg, setTimeout, getItemInfo, revive, updateInv, noCmd, spreadPlayerAnimation, getBlockInfo } from "./functionLib";
 
 export function chatengine() {
 let prefix = config.cmdPrefix
@@ -318,7 +318,15 @@ Syntax: !rank
             case "Account":
                 break;
             case "getDynamicProperties":
+                if(!perms.includes("admin")) return noCmd(msg.sender);
                 send(msg.sender, " - "+world.getDynamicPropertyIds().join("\n - "))
+                break;
+            case "blockInfo":
+                if(!perms.includes("admin")) return noCmd(msg.sender);
+                
+                send(msg.sender, "Block Info:\n - §r§7"+getBlockInfo(
+                    msg.sender.getBlockFromViewDirection({includeLiquidBlocks:true, includePassableBlocks: true, maxDistance: 400}).block
+                ).join("\n§r - §r§7"))
                 break;
             default:
                 noCmd(msg.sender)

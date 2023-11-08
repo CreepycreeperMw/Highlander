@@ -1,4 +1,4 @@
-import { world, Player, system, EquipmentSlot, ItemStack, ItemLockMode, Entity, Vector, ItemTypes} from "@minecraft/server";
+import { world, Player, system, EquipmentSlot, ItemStack, ItemLockMode, Entity, Vector, ItemTypes, Block, SignSide} from "@minecraft/server";
 import { config } from "./config";
 
 /**
@@ -158,6 +158,66 @@ export function getItemInfo(item, player, title) {
     return item;
 }
 
+/**
+ * 
+ * @param {Block} block 
+ * @param {string} title 
+ */
+export function getBlockInfo(block, title) {
+    let lines = []
+    if(title) lines.push(title)
+
+    if(!block/*  || !block.isValid() */) return ["§r§cInvalid Block"]
+
+    lines.push("§r§7Id: "+block.typeId)
+    lines.push("§7Dimension: "+block.dimension.id)
+    if(block.getRedstonePower && block.getRedstonePower()) lines.push("redstone_level: "+block.getRedstonePower())
+    lines.push("Block Tags: "+(block.getTags() || ["None"]).join(", "))
+    lines.push("Item Tags: "+(block.getItemStack().getTags() || ["None"]).join(", "))
+    lines.push("isSolid: "+block.isSolid)
+    lines.push("isAir: "+block.isAir)
+    lines.push("isLiquid: "+block.isLiquid)
+    lines.push("Waterlogged: "+block.isWaterlogged)
+    if(Object.keys(block.permutation.getAllStates()).length > 0) lines.push("States: "
+    +JSON.stringify(block.permutation.getAllStates(),null,4).replace(/\n/gi, "\n    "))
+    if(block.getComponent("minecraft:sign")) {
+        const signComp = block.getComponent("minecraft:sign")
+        lines.push("Sign Data:")
+
+        lines.push("    Front Text: "+signComp.getText(SignSide.Front))
+        lines.push("    FrontColor: "+signComp.getTextDyeColor(SignSide.Front))
+        lines.push("    Back Text: "+signComp.getText(SignSide.Back))
+        lines.push("    FrontColor: "+signComp.getTextDyeColor(SignSide.Back))
+        lines.push("    isWaxed: "+signComp.isWaxed)
+    }
+    if(block.getComponent("minecraft:piston")) {
+        const pistonComp = block.getComponent("minecraft:piston")
+        lines.push("Piston Data:")
+
+        lines.push("    isExpanded: "+pistonComp.isExpanded)
+        lines.push("    isExpanding: "+pistonComp.isExpanding)
+        lines.push("    isMoving: "+pistonComp.isMoving)
+        lines.push("    isRetracted: "+pistonComp.isRetracted)
+        lines.push("    isRetracting: "+pistonComp.isRetracting)
+        if(pistonComp.getAttachedBlocks()[0]) lines.push("    Attached Blocks :\n"+pistonComp.getAttachedBlocks().map(vec=>`x:${vec.x} y:${vec.y} z:${vec.z}`).join(",\n    "))
+    }
+    if(block.getComponent("minecraft:inventory") && block.getComponent("minecraft:inventory").container) {
+        const invComp = block.getComponent("minecraft:inventory").container
+        lines.push("Inventory:")
+
+        lines.push("    size: "+invComp.size)
+        lines.push("    emptySlotsCount: "+invComp.emptySlotsCount)
+
+        lines.push("    Items:")
+        for (let i = 0; i < invComp.size; i++) {
+            const item = invComp.getItem(i);
+            if(!item) continue;
+            lines.push(`        ${i}: ${item.typeId} x${item.amount}`)
+        }
+    }
+    return lines;
+}
+
 export function rainbowart(text) {
     let rbtext = text.split("");
     var rbTNSp = 0;
@@ -297,7 +357,7 @@ export function delay(delay) {
  * @param {string} [prefix] 
  */
 export function send(player, text, prefix) {
-    return player.sendMessage({"rawtext":[{"text":`${prefix??config.chatPrefix} ${text.replace(/\\/gi, "\\\\").replace(/\"/gi, "\\\"")}`}]})
+    return player.sendMessage({"rawtext":[{"text":`${prefix??config.chatPrefix} ${text}`}]})
 }
 
 export function noCmd(player) {
