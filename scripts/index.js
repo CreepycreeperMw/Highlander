@@ -34,22 +34,12 @@ world.beforeEvents.itemUseOn.subscribe(event=>{
 })
 
 world.setDynamicProperty("combatLoggedPlayers",world.getDynamicProperty("combatLoggedPlayers") || "")
-world.setDynamicProperty("extraLives",world.getDynamicProperty("extraLives") || "")
 
 world.beforeEvents.playerInteractWithBlock.subscribe(event=>{
     if(event.block.typeId == "minecraft:dark_oak_button" && event.block.dimension.id == config.dimension && vectorEquals(event.block.location,config.teleportButtonLocation)) {
         system.run(()=>spreadPlayerAnimation(event.player, config.spawnLocation, config.spreadDistance))
     }
 })
-
-// world.afterEvents.projectileHitEntity.subscribe(event=>{
-//     // Made to clear possible projectiles within the church
-//     let {x,y,z} = vectorMinus(event.entity.location, config.kirchePosition)
-//     let length = Math.sqrt(x*x + y*y + z*z)
-//     if(length>config.kirchenAuraRadius) return;
-
-
-// })
 
 world.beforeEvents.explosion.subscribe(event=>{
     if(

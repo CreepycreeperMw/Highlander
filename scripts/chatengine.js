@@ -1,6 +1,6 @@
 import { world, Player, ItemStack, system, ChatSendBeforeEvent } from "@minecraft/server";
 import { config } from "./config";
-import { getPlayer, rainbowart, send, getRanks, supString, serverMsg, setTimeout, getItemInfo, revive, updateInv, noCmd, spreadPlayerAnimation, getBlockInfo } from "./functionLib";
+import { getPlayer, rainbowart, send, getRanks, supString, serverMsg, setTimeout, getItemInfo, revive, updateInv, noCmd, spreadPlayerAnimation, getBlockInfo, broad } from "./functionLib";
 
 export function chatengine() {
 let prefix = config.cmdPrefix
@@ -95,7 +95,10 @@ function chatCallback(msg, perms) {
                     viewingen.addTag("c_ready")
                 }, 150)
                 break;
+            case "reset":
+            case "reinstall":
             case "install":
+                // Load ranks database
                 try{ov.runCommand(`kill @e[type=c:mr_save]`)} catch{}
                 try{ov.runCommand(`tickingarea add 0 500 0 0 500 0 addon_save`)} catch{}
                 try{
@@ -108,8 +111,15 @@ function chatCallback(msg, perms) {
                     ranksen.addTag("ranks")
                 } catch{}
                 ranksen.runCommand(`tp @s 0 500 0`)
+
+                // Setup Gamerules and Settings
                 ov.runCommandAsync("gamerule showdeathmessages false")
                 ov.runCommandAsync("gamerule sendcommandfeedback false")
+
+                // Reset and Overwrite Dynamic Properties
+                world.clearDynamicProperties()
+                world.setDynamicProperty("combatLoggedPlayers","")
+                world.getAllPlayers().forEach(pl=>pl.setDynamicProperty("extraLives",""))
                 break;
             case "sudo":
                 if(!perms.includes("sudo")) return send(msg.sender, `§cIch kann diesen Command nicht finden X_X`)
@@ -362,9 +372,16 @@ Syntax: !rank
         if(perms.includes("admin") && msg.message.startsWith("#")) {
             serverMsg("@a","§7"+(msg.message.startsWith("# ") ? msg.message.slice(2) : msg.message.slice(1)).replace(/§r/g,""))
             return;
-
-            // "§8[§l§cSPECTATOR§r§8] §rCreepy§8: §o§7"
         }
+        
+        if(perms.includes("moderator") && msg.message.startsWith("$")) {
+            const text = "§6§lTeam§r§8>> §r"+msg.sender.nameTag+"§7:"+(msg.message.startsWith("$ ") ? msg.message.slice(2) : msg.message.slice(1)).replace(/§r/g,"")
+            broad("@a[tag=team]",text)
+            broad("@a[tag=!team,tag=moderator]",text)
+            broad("@a[tag=!team,tag=admin,tag=!moderator]",text)
+            return;
+        }
+
         if(msg.sender.hasTag("spectator")) return msg.sender.runCommand(`tellraw @a[tag=spectator] {"rawtext":[{"text":"§8[§l§cDEAD§r§8] §r§7${supString(msg.sender.nameTag)}§8: §o§7${supString(msg.message)}"}]}`),msg.sender.runCommand(`tellraw @a[tag=team,tag=!spectator] {"rawtext":[{"text":"§8[§l§cDEAD§r§8] §r§7${supString(msg.sender.nameTag)}§8: §o§7${supString(msg.message)}"}]}`);
         if(!rank) return msg.sender.runCommand(`tellraw @a {"rawtext":[{"text":"§l§aAlive §r§8| §r${supString(msg.sender.nameTag)}§7: §r${supString(msg.message)}"}]}`);
         msg.sender.runCommand(`tellraw @a {"rawtext":[{"text":"${supString(rank.display)} §r§8| §r${supString(msg.sender.nameTag)}§7: §r${supString(msg.message)}"}]}`)
@@ -398,6 +415,7 @@ world.beforeEvents.chatSend.subscribe(msg=> {
     }
     if(perms.includes("muted")&&(!msg.message.startsWith(prefix))) return send(msg.sender,`§7You are currently §c§lMUTED`);
     if(perms.includes("admin") && msg.message.startsWith("#")) msg.cancel = true;
+    if(perms.includes("moderator") && msg.message.startsWith("$")) msg.cancel = true;
     system.run(()=>chatCallback(msg, perms))
 })
 }

@@ -110,6 +110,7 @@ world.afterEvents.playerSpawn.subscribe(({player, initialSpawn})=>{
             deathpoint.delete(player.id)
         }
     } else {
+        if(!player.getDynamicProperty("extraLives")) player.setDynamicProperty("extraLives", "")
         let xHp = player.getDynamicProperty("extraLives") ?? 0
 
         // Set max hp
