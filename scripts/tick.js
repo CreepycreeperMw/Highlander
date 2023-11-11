@@ -1,6 +1,6 @@
 import { world, system, ItemStack, ItemTypes } from "@minecraft/server"
 import { config } from "./config";
-import { normalizeVector2, updateInv, vectorAdd, vectorMinus, vectorMultiply } from "./functionLib";
+import { normalizeVector2, updateInv, vectorAdd, vectorDistance, vectorMinus, vectorMultiply } from "./functionLib";
 var dm = world.getDimension("overworld");
 
 system.runInterval(() => {
@@ -103,6 +103,8 @@ system.runInterval(() => {
     dm.runCommandAsync("execute as @e[type=c:entity,tag=reviveParticle] at @s run tp @s ~ ~ ~ ~5 ~")
 
     world.getPlayers({tags: ["in_combat"]}).forEach(player=>{
+        if(vectorDistance(player.location, config.churchPos) > config.churchAuraRadius) return;
+
         const {x,z} = vectorMinus(player.location, config.churchPos)
         player.applyKnockback(x, z, config.horizontalPlayerKb, config.verticalPlayerKb)
     })
