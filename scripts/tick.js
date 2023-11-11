@@ -101,4 +101,9 @@ system.runInterval(() => {
     dm.runCommandAsync("execute as @e[type=c:entity,tag=reviveParticle] at @s positioned ~ ~1.4 ~ run particle minecraft:basic_portal_particle ^ ^ ^-0.4")
     dm.runCommandAsync("execute as @e[type=c:entity,tag=reviveParticle] at @s positioned ~ ~1.4 ~ run particle minecraft:basic_portal_particle ^ ^ ^-0.4")
     dm.runCommandAsync("execute as @e[type=c:entity,tag=reviveParticle] at @s run tp @s ~ ~ ~ ~5 ~")
+
+    world.getPlayers({tags: ["in_combat"]}).forEach(player=>{
+        const {x,z} = vectorMinus(player.location, config.churchPos)
+        player.applyKnockback(x, z, 2, 0.4, 0.1)
+    })
 })
