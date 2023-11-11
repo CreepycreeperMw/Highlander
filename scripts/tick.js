@@ -104,6 +104,6 @@ system.runInterval(() => {
 
     world.getPlayers({tags: ["in_combat"]}).forEach(player=>{
         const {x,z} = vectorMinus(player.location, config.churchPos)
-        player.applyKnockback(x, z, 2, 0.4, 0.1)
+        player.applyKnockback(x, z, config.horizontalPlayerKb, config.verticalPlayerKb)
     })
 })

@@ -1,7 +1,7 @@
 export const config = {
     /* Prefix for custom commands */
     cmdPrefix:"!",
-    
+
     /* Prefix for chat messages */
     chatPrefix:"§l§bHighlander§r§8>>§r",
 
@@ -59,5 +59,7 @@ export const config = {
         "minecraft:spider",
         "minecraft:creeper",
         "minecraft:skeleton"
-    ]
+    ],
+    horizontalPlayerKb: 0.5,
+    verticalPlayerKb: 0.5,
 }
