@@ -1,6 +1,7 @@
 import { world, Player, ItemStack, system, ChatSendBeforeEvent } from "@minecraft/server";
 import { config } from "./config";
 import { getPlayer, rainbowart, send, getRanks, supString, serverMsg, setTimeout, getItemInfo, revive, updateInv, noCmd, spreadPlayerAnimation, getBlockInfo, broad } from "./functionLib";
+import { extraHp } from "./killcounter";
 
 export function chatengine() {
 let prefix = config.cmdPrefix
@@ -17,6 +18,7 @@ var loadAttemp;
 
 function loadAttemp() {
     try{ov.runCommand(`tickingarea add 0 500 0 0 500 0 addon_save`)} catch{}
+    try{world.getAllPlayers().forEach(pl=>pl.setDynamicProperty("extraLives",pl.getDynamicProperty("extraLives")??0))} catch {}
     setTimeout(()=>{
         var loaded = [...ov.getEntities()][0]
         if(!loaded) return loadAttemp();
@@ -36,6 +38,7 @@ function loadAttemp() {
                     ])
                 } catch(err){console.warn(err)}
             }
+            world.getAllPlayers().forEach(pl=>pl.setDynamicProperty("extraLives",pl.getDynamicProperty("extraLives")??0))
             ranksen.runCommand(`tp @s 0 500 0`)
             ranks=JSON.parse(ranksen.nameTag);
             ov.runCommandAsync("gamerule showdeathmessages false")
@@ -119,7 +122,7 @@ function chatCallback(msg, perms) {
                 // Reset and Overwrite Dynamic Properties
                 world.clearDynamicProperties()
                 world.setDynamicProperty("combatLoggedPlayers","")
-                world.getAllPlayers().forEach(pl=>pl.setDynamicProperty("extraLives",""))
+                world.getAllPlayers().forEach(pl=>pl.setDynamicProperty("extraLives",0))
                 break;
             case "sudo":
                 if(!perms.includes("sudo")) return send(msg.sender, `§cIch kann diesen Command nicht finden X_X`)
@@ -338,6 +341,25 @@ Syntax: !rank
                     msg.sender.getBlockFromViewDirection({includeLiquidBlocks:true, includePassableBlocks: true, maxDistance: 400})?.block
                 ).join("\n§r - §r§7"))
                 break;
+            case "getExtraHp":{
+                if(!perms.includes("admin")) return noCmd(msg.sender);
+
+                /** @type {Player} */
+                let target;
+                if(args[1]=="me") target = msg.sender
+                else target=getPlayer(args[1]);
+                if(!target) return send(msg.sender, `§cKonnte diesen Spieler nicht finden XoX`)
+
+                if(!args[2]) args[2] = "memory"
+                if(args[2]=="memory") {
+                    send(msg.sender, `§7Der Spieler §9${target.name} §7hat §9${extraHp.get(target.id)} §7Extra Herzen`)
+                } else if(args[2]=="property") {
+                    send(msg.sender, `§7Der Spieler §9${target.name} §7hat §9${target.getDynamicProperty("extraLives")} §7Extra Herzen`)
+                } else {
+                    send(msg.sender, `§cInvalid argument: ${args[2]}. Only "memory" or "property" are valid here.`)
+                }
+                break;
+            }
             default:
                 noCmd(msg.sender)
                 break;

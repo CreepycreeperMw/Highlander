@@ -1,15 +1,22 @@
 import { world, system, Player } from "@minecraft/server";
 import { broad, setTimeout, send } from "./functionLib";
 
-let deathpoint = new Map()
+// Dynamic Property Handler
+Player.prototype._setDynamicProperty = Player.prototype.setDynamicProperty
+Player.prototype.setDynamicProperty = function(identifier, value) {
+    if(identifier == "extraLives") extraHp.set(this.id, value)
+    this._setDynamicProperty(identifier, value)
+}
+
+export let deathpoint = new Map()
 /**
  * @type {Map<number, number>}
  */
-let playerHit = new Map()
+export let playerHit = new Map()
 /**
  * @type {Map<number, number>}
  */
-let combatCooldown = new Map()
+export let combatCooldown = new Map()
 /**
  * @type {Map<number, string[]>}
  */
@@ -17,7 +24,7 @@ let killsDue = new Map()
 /**
  * @type {Map<string, number>}
  */
-let extraHp = new Map()
+export let extraHp = new Map()
 const cooldownTime = 40000
 /**
  * 
@@ -28,6 +35,7 @@ function invincibilityNotifier(player, time = cooldownTime) {
         if(!player.isValid() || !combatCooldown.has(player.id)) return;
         if((new Date().getTime() - combatCooldown.get(player.id)) >= cooldownTime) {
             send(player, "§7Du bist jetzt §anicht mehr gejagt§r","§l§9Info§r§8>>§r")
+            player.removeTag("in_combat")
         } else {
             invincibilityNotifier(player, cooldownTime - (new Date().getTime() - combatCooldown.get(player.id)))
         }
@@ -88,6 +96,7 @@ world.afterEvents.entityHurt.subscribe(({hurtEntity, damageSource, damage})=>{
         if(!combatCooldown.has(hurtEntity.id) || (new Date().getTime() - combatCooldown.get(hurtEntity.id)) >= cooldownTime) {
             send(hurtEntity, "§7Du bist jetzt §cgejagt§r§7"+(hurtEntity.hasTag("tipCombat")?'':'. In diesem Zustand kannst du §4sterben§7, da ein Spieler für dein Leid verantwortlich ist.'),"§l§9Info§r§8>>§r")
             hurtEntity.addTag("tipCombat")
+            hurtEntity.addTag("in_combat")
             invincibilityNotifier(hurtEntity)
         }
         combatCooldown.set(hurtEntity.id, new Date().getTime())
@@ -110,7 +119,8 @@ world.afterEvents.playerSpawn.subscribe(({player, initialSpawn})=>{
             deathpoint.delete(player.id)
         }
     } else {
-        if(!player.getDynamicProperty("extraLives")) player.setDynamicProperty("extraLives", "")
+        if(!player.getDynamicProperty("extraLives")) player.setDynamicProperty("extraLives", 0)
+        extraHp.set(player.id, player.getDynamicProperty("extraLives"))
         let xHp = player.getDynamicProperty("extraLives") ?? 0
 
         // Set max hp
@@ -133,6 +143,8 @@ world.afterEvents.playerSpawn.subscribe(({player, initialSpawn})=>{
 
             player.kill()
         }
+
+        player.removeTag("in_combat")
     }
 })
 
