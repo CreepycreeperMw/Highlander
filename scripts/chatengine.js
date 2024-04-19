@@ -411,8 +411,8 @@ Syntax: !rank
 };
 
 world.beforeEvents.chatSend.subscribe(msg=> {
-    msg.sendToTargets=true
-    msg.setTargets([])
+    // msg.sendToTargets=true
+    // msg.setTargets([])
     if(msg.message.startsWith(prefix) && !msg.message.toLowerCase().startsWith("!account")) msg.cancel = true;
 
     let perms = [];
